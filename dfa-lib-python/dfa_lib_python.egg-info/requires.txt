@@ -1,0 +1,5 @@
+flake8
+pypi-publisher
+pytest
+pytest-cov
+requests

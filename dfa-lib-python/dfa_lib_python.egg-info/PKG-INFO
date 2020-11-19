@@ -1,0 +1,42 @@
+Metadata-Version: 1.1
+Name: dfa-lib-python
+Version: 1.0.0
+Summary: A Python library for Dataflow Analyzer that can be installed with pip.
+Home-page: https://gitlab.com/viniciusscampos/dfa-lib-python
+Author: Vinicius Campos
+Author-email: silvcamposvinicius@gmail.com
+License: BSD
+Download-URL: https://gitlab.com/viniciusscampos/dfa-lib-python/tarball/1.0.0
+Description: Dataflow Analyzer Python Library
+        ===============================
+        
+        version number: 1.0.0
+        author: Vinícius Campos
+        
+        Overview
+        --------
+        
+        A Python library for Dataflow Analyzer that can be installed with pip.
+        
+        Installation / Usage
+        --------------------
+        
+        To install use pip:
+        
+            $ pip install dfa_lib_python
+        
+        
+        Or clone the repo:
+        
+            $ git clone https://github.com/viniciusscampos/dfa_lib_python.git
+            $ python setup.py install
+        
+        Documentation
+        ------------
+        
+        More information can be found at [https://dfa-lib-python-docs.herokuapp.com/](https://dfa-lib-python-docs.herokuapp.com/)
+        
+Platform: UNKNOWN
+Classifier: Development Status :: 3 - Alpha
+Classifier: Intended Audience :: Developers
+Classifier: Programming Language :: Python :: 3
