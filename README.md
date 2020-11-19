@@ -46,3 +46,21 @@ cd DfAnalyzer
 
 ```
 
+No script da rede neural, especificada com o Keras, o usuário deve acrescentar o seguinte código:
+
+```
+hyps = {"OPTIMIZER_NAME": True,
+"LEARNING_RATE": True,
+"DECAY": False,
+"MOMENTUM": False,
+"NUM_EPOCHS": True,
+"BATCH_SIZE": False,
+"NUM_LAYERS": True}
+
+model.provenance(dataflow_tag="keras-alexnet-df",
+                 adaptation=True,
+                 hyps = hyps)
+```
+
+O método provenance deve ser utilizado para capturar dados de proveniência. Esse método recebe uma tag para identificação do fluxo de dados (dataflow_tag), se existe adaptação dos hiperparâmetros durante otreinamento (atualização da taxa de aprendizado, por exemplo). Essa versão suporta apenas a utilização do método LearningRateScheduler oferecido pelo Keras, e a lista de hiperparâmetros que se deseja capturar (em que deve marcar True ou False para aqueles hiperparâmetros que deseja capturar).
+
