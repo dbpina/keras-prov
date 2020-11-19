@@ -1,4 +1,6 @@
 # keras-prov
+Keras-Prov foi desenvolvido com base na [DfAnalyzer](https://gitlab.com/ssvitor/dataflow_analyzer) e com a adaptação do [Keras](https://github.com/keras-team/keras).
+
 Para utilizar a KerasProv são requeridas as seguintes aplicações:
 
 * [Java](https://java.com/pt-BR/)
