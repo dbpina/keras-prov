@@ -70,7 +70,7 @@ Nos imports de código no lugar do módulo do tensorflow.keras deve ser chamado 
 
 ```
 from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import Dense, Activation, Dropout, Flatten,Conv2D, MaxPooling2D
+from tensorflow.keras.layers import Dense, Activation, Dropout
 from tensorflow.keras.layers import BatchNormalization
 ```
 
@@ -80,5 +80,5 @@ deve ser reescrito como:
 ```
 from keras.models import Sequential
 from keras.layers import Dense, Dropout, Activation
-from keras.layers import Embedding, BatchNormalization
+from keras.layers import BatchNormalization
 ```
