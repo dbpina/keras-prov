@@ -6,8 +6,8 @@ Para utilizar a KerasProv são requeridas as seguintes aplicações:
 * [Java](https://java.com/pt-BR/)
 * [MonetDB](http://www.monetdb.org/Documentation/UserGuide/Tutorial)
 * [PyMonetDB](https://pymonetdb.readthedocs.io/en/latest/index.html)
-* [DfAnalyzer](https://bitbucket.org/dbpina/keras-prov-schemas/src/master/dbpina-keras-prov/DfAnalyzer/)
-* [dfa-lib-python](https://bitbucket.org/dbpina/keras-prov-schemas/src/master/dbpina-keras-prov/dfa-lib-python/) 
+* [DfAnalyzer](https://github.com/dbpina/keras-prov/tree/main/DfAnalyzer)
+* [dfa-lib-python](https://github.com/dbpina/keras-prov/tree/main/dfa-lib-python/) 
 
 ### Instalação da KerasProv
 
