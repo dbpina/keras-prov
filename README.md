@@ -64,3 +64,21 @@ model.provenance(dataflow_tag="keras-alexnet-df",
 
 O método provenance deve ser utilizado para capturar dados de proveniência. Esse método recebe uma tag para identificação do fluxo de dados (dataflow_tag), se existe adaptação dos hiperparâmetros durante otreinamento (atualização da taxa de aprendizado, por exemplo). Essa versão suporta apenas a utilização do método LearningRateScheduler oferecido pelo Keras, e a lista de hiperparâmetros que se deseja capturar (em que deve marcar True ou False para aqueles hiperparâmetros que deseja capturar).
 
+### Observação
+
+Nos imports de código no lugar do módulo do tensorflow.keras deve ser chamado o módulo keras diretamente. Exemplo:
+
+```
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import Dense, Activation, Dropout
+from tensorflow.keras.layers import BatchNormalization
+```
+
+deve ser reescrito como: 
+
+
+```
+from keras.models import Sequential
+from keras.layers import Dense, Dropout, Activation
+from keras.layers import BatchNormalization
+```
