@@ -169,10 +169,14 @@ def fit_loop(model, fit_function, fit_inputs,
         else:
             momentum = 0
 
+        if('decay' in model.optimizer.get_config()):
+            decay = model.optimizer.get_config()['decay']
+        else:
+            decay = 0
         
         hyps_values = {"OPTIMIZER_NAME": model.optimizer.__class__.__name__,
                 "LEARNING_RATE": model.optimizer.get_config()['learning_rate'],
-                "DECAY": model.optimizer.get_config()['decay'],
+                "DECAY": decay,
                 "MOMENTUM": momentum,
                 "NUM_EPOCHS": epochs,
                 "BATCH_SIZE": batch_size,
