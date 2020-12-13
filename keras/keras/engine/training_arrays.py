@@ -259,7 +259,8 @@ def fit_loop(model, fit_function, fit_inputs,
                 val_outs = test_loop(model, val_function, val_inputs,
                                      steps=validation_steps,
                                      callbacks=callbacks,
-                                     verbose=0)
+                                     verbose=0,
+                                     type="train")
                 val_outs = to_list(val_outs)
                 # Same labels assumed.
                 for l, o in zip(out_labels, val_outs):
@@ -303,7 +304,8 @@ def fit_loop(model, fit_function, fit_inputs,
                     val_outs = test_loop(model, val_function, val_inputs,
                                          batch_size=batch_size,
                                          callbacks=callbacks,
-                                         verbose=0)
+                                         verbose=0,
+                                         type="train")
                     val_outs = to_list(val_outs)
                     # Same labels assumed.
                     for l, o in zip(out_labels, val_outs):
@@ -314,16 +316,16 @@ def fit_loop(model, fit_function, fit_inputs,
             break
         if model.capture_provenance is True:
             now = time.time()
-            if 'accuracy' in batch_logs:
-                acc = batch_logs['accuracy']
+            if 'accuracy' in epoch_logs:
+                acc = epoch_logs['accuracy']
             else:
                 acc = 0
 
             if 'val_accuracy' in epoch_logs:
                 v_acc = epoch_logs['val_accuracy']
             else:
-                v_acc = 0                
-            t1_output = DataSet("oTrainingModel", [Element([now, now - start, batch_logs['loss'], acc, epoch_logs['val_loss'], v_acc, epoch])])
+                v_acc = 0           
+            t1_output = DataSet("oTrainingModel", [Element([now, now - start, epoch_logs['loss'], acc, epoch_logs['val_loss'], v_acc, epoch])])
             t1.add_dataset(t1_output)
             if(epoch==epochs-1):
                 t1.end()
@@ -457,7 +459,8 @@ def test_loop(model, f, ins,
               batch_size=None,
               verbose=0,
               steps=None,
-              callbacks=None):
+              callbacks=None,
+              type=None):
     """Abstract method to loop over some data in batches.
 
     # Arguments
@@ -582,4 +585,19 @@ def test_loop(model, f, ins,
                 progbar.update(batch_end)
         outs[0] /= num_samples  # Index 0 == `Loss`
     callbacks._call_end_hook('test')
+
+    if model.capture_provenance is True:
+        if type == "evaluate":
+            t11 = Task(1, model.dataflow_tag, "TrainingModel") 
+            t3 = Task(3, model.dataflow_tag, "TestingModel", dependency=t11)     
+            t3.begin()                
+            now = time.time()
+            if 'accuracy' in batch_logs:
+                acc = batch_logs['accuracy']
+            else:
+                acc = 0
+            testing_output = DataSet("oTestingModel", [Element([now, outs[0], outs[1]])])
+            t3.add_dataset(testing_output)
+            t3.end()
+       
     return unpack_singleton(outs)

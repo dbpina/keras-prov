@@ -138,6 +138,16 @@ class Provenance():
 		if adaptation is True:
 			self.create_adaptation_transformation()
 
+		tf3 = Transformation("TestingModel")
+		tf3_output = Set("oTestingModel", SetType.OUTPUT, 
+		    [Attribute("TIMESTAMP", AttributeType.TEXT),
+		    Attribute("LOSS", AttributeType.NUMERIC),
+		    Attribute("ACCURACY", AttributeType.NUMERIC)])
+		tf1_output.set_type(SetType.INPUT)
+		tf1_output.dependency=tf1._tag
+		tf3.set_sets([tf1_output, tf3_output])
+		self.df.add_transformation(tf3) 			
+
 		#self.df.save()
 
 		return self.transformations_task
@@ -153,7 +163,6 @@ class Provenance():
 		self.df.add_transformation(tf3)
 
 	def add_hyperparameter(self, hyperparameters):
-		print("not first run -- adding hyp")
 		# set up a connection. arguments below are the defaults
 		connection = pymonetdb.connect(username="monetdb", password="monetdb", hostname="localhost", database="dataflow_analyzer")
 		# create a cursor

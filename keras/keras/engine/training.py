@@ -281,7 +281,6 @@ class Model(Network):
             if self.firstrun is True:
                 transformations_task = self.p.create_training_transformation(new_hyps, adaptation, transformations, dictionary)                        
             else:
-                print("not first run - em prov")
                 self.p.get_dataflow()
                 # self.p.drop_view(dataflow_tag)      
                 # self.p.add_hyperparameter(dictionary)  
@@ -1414,7 +1413,8 @@ class Model(Network):
                                          batch_size=batch_size,
                                          verbose=verbose,
                                          steps=steps,
-                                         callbacks=callbacks)
+                                         callbacks=callbacks,
+                                         type="evaluate")
 
     def predict(self, x,
                 batch_size=None,
