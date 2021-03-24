@@ -98,7 +98,7 @@ This image can be executed and accessed interactively through the following comm
 docker run --name <nome_container> -i tensorflow_i
 docker exec -it <nome_container> bash
 ```
-## Dump do Banco
+## MonetDB
 
 To install MonetDB follow the tutorial at: https://www.monetdb.org/Documentation/Tutorial
 
