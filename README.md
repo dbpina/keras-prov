@@ -102,7 +102,7 @@ docker exec -it <nome_container> bash
 
 To install MonetDB follow the tutorial at: https://www.monetdb.org/Documentation/Tutorial
 
-To run and query the dump, run the following commands: 
+To run and query the dump (which is available in the directory "sql" in the directory "Example"), run the following commands: 
 
 ```
 monetdb create dataflow_analyzer
@@ -111,10 +111,12 @@ mclient –u monetdb –lsql –database=dataflow_analyzer dump.sql
 
 ```
 
+The database schema is also available and can be accessed in the directory "sql" in the directory "Example".
+
 ## Example
 
 In the directory Example, the user may find a usage example of KerasProv. To run it, just run the following command:
 
-```python alexnet.py
-
+```
+python alexnet.py
 ```
