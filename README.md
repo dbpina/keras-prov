@@ -110,3 +110,11 @@ monetdb release dataflow_analyzer
 mclient –u monetdb –lsql –database=dataflow_analyzer dump.sql
 
 ```
+
+## Example
+
+In the directory Example, the user may find a usage example of KerasProv. To run it, just run the following command:
+
+```python alexnet.py
+
+```
