@@ -89,13 +89,13 @@ from keras.layers import BatchNormalization
 We provide an image of the environment. The Dockerfile present in the folder creates the image of a container with the data from this repository. 
 
 ```
-docker push lilianekunstmann/tensorflow_i
+docker pull lilianekunstmann/kerasprov
 ```
 
 This image can be executed and accessed interactively through the following commands:
 
 ```
-docker run --name <nome_container> -i tensorflow_i
+docker run --name <nome_container> -i kerasprov
 docker exec -it <nome_container> bash
 ```
 ## MonetDB
