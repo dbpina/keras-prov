@@ -120,3 +120,47 @@ In the directory Example, the user may find a usage example of KerasProv. To run
 ```
 python alexnet.py
 ```
+
+To add new parameters to be captured and store, the user have to import the necessary packeges of dfa-lib-python and specify the new transformation. For example, if one wants to capture data related to a dense block (growth rate and number of layers in the dense block), the specification have to be added before the model.fit command and would be like:
+
+```
+from dfa_lib_python.dataflow import Dataflow
+from dfa_lib_python.transformation import Transformation
+from dfa_lib_python.attribute import Attribute
+from dfa_lib_python.attribute_type import AttributeType
+from dfa_lib_python.set import Set
+from dfa_lib_python.set_type import SetType
+from dfa_lib_python.task import Task
+from dfa_lib_python.dataset import DataSet
+from dfa_lib_python.element import Element
+
+df = model.get_dataflow()
+
+tf_denseb = Transformation("DenseBlock")
+tf_denseb_input = Set("iDenseBlock", SetType.INPUT, 
+    [Attribute("growth_rate", AttributeType.NUMERIC), 
+    Attribute("layers_db", AttributeType.NUMERIC)])
+tf_denseb_output = Set("oDenseBlock", SetType.OUTPUT, 
+    [Attribute("output", AttributeType.TEXT)])
+tf_denseb.set_sets([tf_denseb_input, tf_denseb_output])
+df.add_transformation(tf_denseb) 
+```
+
+The second step is the moment when the user must instrument the code to capture the parameter value. For example:
+
+```
+t_denseb = Task(identifier=4, dataflow_tag, "DenseBlock")
+##Data manipulation, example:
+growth_rate = 1
+layers_db = 33
+t_denseb_input = DataSet("iExtrairNumeros", [Element([growth_rate, layers_db])])
+t_denseb.add_dataset(t_denseb_input)
+t_denseb.begin()
+##Data manipulation, example:
+t_denseb_output= DataSet("oExtrairNumeros", [Element([output])])
+t_denseb.add_dataset(t_denseb_output)
+t_denseb.end()
+```
+
+
+Both steps, specification of the transformation and the activity definition, follow the definitions of [dfa-lib-python](http://monografias.poli.ufrj.br/monografias/monopoli10026387.pdf) for DfAnalyzer.
