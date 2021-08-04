@@ -164,3 +164,8 @@ t_denseb.end()
 
 
 Both steps, specification of the transformation and the activity definition, follow the definitions of [dfa-lib-python](http://monografias.poli.ufrj.br/monografias/monopoli10026387.pdf) for DfAnalyzer.
+
+
+Presentation Video
+
+To watch the video, please, click [here](https://www.youtube.com/watch?v=QOZY2CQfXJ8).
