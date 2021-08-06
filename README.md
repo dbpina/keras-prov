@@ -6,7 +6,7 @@ Keras-Prov is a provenance service management approach designed for supporting h
 
 Keras-Prov was developed based on [DfAnalyzer](https://gitlab.com/ssvitor/dataflow_analyzer) and with modifications on [Keras](https://github.com/keras-team/keras) source code.
 
-### Keras-Prov installation
+### Installation
 
 The following softwares have to be configured/installed for running an DNN training with provenance capture.
 
@@ -176,8 +176,6 @@ Both steps, specification of the transformation and the activity definition, fol
 To watch the video, please, click [here](https://www.youtube.com/watch?v=QOZY2CQfXJ8).
 
 ## Publications
-
-* [MURTA, L. G. P.; BRAGANHOLO, V.; CHIRIGATI, F. S.; KOOP, D.; FREIRE, J.; noWorkflow: Capturing and Analyzing Provenance of Scripts. In: International Provenance and Annotation Workshop (IPAW), 2014, Cologne, Germany.](https://github.com/gems-uff/noworkflow/raw/master/docs/ipaw2014.pdf)
 
 * [Pina, D. B., Neves, L., Paes, A., de Oliveira, D., & Mattoso, M. (2019, November). Análise de hiperparâmetros em aplicações de aprendizado profundo por meio de dados de proveniência. In Anais do XXXIV Simpósio Brasileiro de Banco de Dados (pp. 223-228). SBC.](https://sol.sbc.org.br/index.php/sbbd/article/view/8827)
 
