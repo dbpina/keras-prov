@@ -1,15 +1,20 @@
-# keras-prov
-Keras-Prov was developed based on [DfAnalyzer](https://gitlab.com/ssvitor/dataflow_analyzer) and with adaptation on [Keras](https://github.com/keras-team/keras) source code.
+# Keras-Prov
 
-The following softwares have to be configured / installed for running this application.
+### Overview
+
+Keras-Prov is a provenance service management approach designed for supporting hyperparameter analysis in Deep Neural Networks (DNNs). Keras-Prov integrates traditional retrospective provenance data (r-prov) with domain-specific DL data. This solution provides an API that allows for users to develop their ML-based workflows using Keras while being able to share and analyze captured provenance data using W3C PROV. 
+
+Keras-Prov was developed based on [DfAnalyzer](https://gitlab.com/ssvitor/dataflow_analyzer) and with modifications on [Keras](https://github.com/keras-team/keras) source code.
+
+### Keras-Prov installation
+
+The following softwares have to be configured/installed for running an DNN training with provenance capture.
 
 * [Java](https://java.com/pt-BR/)
 * [MonetDB](http://www.monetdb.org/Documentation/UserGuide/Tutorial)
 * [PyMonetDB](https://pymonetdb.readthedocs.io/en/latest/index.html)
 * [DfAnalyzer](https://github.com/dbpina/keras-prov/tree/main/DfAnalyzer)
 * [dfa-lib-python](https://github.com/dbpina/keras-prov/tree/main/dfa-lib-python/) 
-
-### Keras-Prov installation
 
 Download (or clone) this repository, and run:
 
@@ -26,7 +31,7 @@ python setup.py install
 
 ```
 
-The use of KerasProv depends on the initialization of DfAnalyzer and the database used. To do this, run the following commands:
+The use of Keras-Prov depends on the initialization of DfAnalyzer and the database used. To do this, run the following commands:
 
 
 ```
@@ -48,7 +53,7 @@ cd DfAnalyzer
 
 ```
 
-Important: In the neural network script, specified with Keras, the user must add the following code:
+Important: In the neural network script specified with Keras, the user must add the following code:
 
 ```
 hyps = {"OPTIMIZER_NAME": True,
@@ -169,3 +174,13 @@ Both steps, specification of the transformation and the activity definition, fol
 ## Presentation Video
 
 To watch the video, please, click [here](https://www.youtube.com/watch?v=QOZY2CQfXJ8).
+
+## Publications
+
+* [MURTA, L. G. P.; BRAGANHOLO, V.; CHIRIGATI, F. S.; KOOP, D.; FREIRE, J.; noWorkflow: Capturing and Analyzing Provenance of Scripts. In: International Provenance and Annotation Workshop (IPAW), 2014, Cologne, Germany.](https://github.com/gems-uff/noworkflow/raw/master/docs/ipaw2014.pdf)
+
+* [Pina, D. B., Neves, L., Paes, A., de Oliveira, D., & Mattoso, M. (2019, November). Análise de hiperparâmetros em aplicações de aprendizado profundo por meio de dados de proveniência. In Anais do XXXIV Simpósio Brasileiro de Banco de Dados (pp. 223-228). SBC.](https://sol.sbc.org.br/index.php/sbbd/article/view/8827)
+
+* [Pina, D., Kunstmann, L., de Oliveira, D., Valduriez, P., & Mattoso, M. (2020, September). Uma abordagem para coleta e análise de dados de configurações em redes neurais profundas. In 35ª Simpósio Brasileiro de Banco de Dados (SBBD) (pp. 1-6).](https://hal-lirmm.ccsd.cnrs.fr/lirmm-02969506/)
+
+* [Pina, D., Kunstmann, L., de Oliveira, D., Valduriez, P., & Mattoso, M. (2020). Provenance Supporting Hyperparameter Analysis in Deep Neural Networks. In Provenance and Annotation of Data and Processes (pp. 20-38). Springer, Cham.](https://link.springer.com/chapter/10.1007/978-3-030-80960-7_2)
