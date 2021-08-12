@@ -23,15 +23,19 @@ The following softwares have to be configured/installed for running a DNN traini
 
 ###  Python library: dfa-lib-python
 
-Download (or clone) this repository, and run:
-
+The DfAnalyzer library for the programming language Python can be built with the following command lines:
 
 ```
 
 cd dfa-lib-python
 python setup.py install
 
-cd ..
+```
+###  DNN library with provenance capture: Keras-Prov
+
+The Keras-Prov library can be built with the following command lines:
+
+```
 
 cd keras
 python setup.py install
