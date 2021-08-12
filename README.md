@@ -18,22 +18,6 @@ The following softwares have to be configured/installed for running a DNN traini
 
 ## Installation
 
-### MonetDB
-
-To install MonetDB follow the tutorial at: https://www.monetdb.org/Documentation/Tutorial
-
-To run and query the dump (which is available in the directory "sql" in the directory "Example"), run the following commands: 
-
-```
-monetdb create dataflow_analyzer
-monetdb release dataflow_analyzer
-mclient –u monetdb –lsql –database=dataflow_analyzer dump.sql
-
-```
-
-The database schema is also available and can be accessed in the directory "sql" in the directory "Example".
-
-
 <!---### RESTful services -->
 
 
