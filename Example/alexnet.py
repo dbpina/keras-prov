@@ -102,6 +102,7 @@ for i in range(0, x.shape[0]):
 y = y_tmp
 
 x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.2, shuffle=True)
+drop = 0.5
 
 # (3) Create a sequential model
 model = Sequential()
@@ -191,8 +192,7 @@ model.provenance(dataflow_tag="alexnet",
 
 epochs = 100
 
-initial_lrate = lerate
-drop = 0.5
+initial_lrate = 0.001
 epochs_drop = 10.0
 adaptation_id = 0
 
