@@ -32,7 +32,7 @@ x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.2, shuffle
 drop = 0.5
 
 drop = 0.5
-epochs = 10
+epochs = 2
 lerate = 0.001
 
 initial_lrate = lerate

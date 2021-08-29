@@ -86,8 +86,8 @@ def untar(fname, extract_dir):
 
 def load_data(dirname="17flowers", resize_pics=(224, 224), shuffle=True,
     one_hot=False):
-    dataset_file = os.path.join("/keras-prov/Experimentos/17flowers", '17flowers.pkl')
-    dirname = '/keras-prov/Experimentos/17flowers'
+    dataset_file = os.path.join("17flowers", '17flowers.pkl')
+    dirname = '17flowers'
     tarpath = maybe_download("17flowers.tgz",
                                  "http://www.robots.ox.ac.uk/~vgg/data/flowers/17/",dirname)
     X, Y = build_image_dataset_from_dir(os.path.join(dirname, 'jpg/'),

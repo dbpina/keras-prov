@@ -5,7 +5,7 @@ SIMULATION_DIR=`pwd`
 DFA_PROPERTIES=$SIMULATION_DIR/DfA.properties
 DI_DIR=$SIMULATION_DIR
 DB_CONFIG_FILE=database.conf
-DFANALYZER_VERSION=2.0
+DFANALYZER_VERSION=1.0
 echo "--------------------------------------------"
 echo "Removing data from previous executions"
 rm $DFA_PROPERTIES
@@ -29,7 +29,7 @@ echo "Configuring the file DfA.properties"
 echo "di_dir="$DI_DIR >> $DFA_PROPERTIES
 echo "dbms=MONETDB" >> $DFA_PROPERTIES
 echo "db_server=localhost" >> $DFA_PROPERTIES
-echo "db_port=50001" >> $DFA_PROPERTIES
+echo "db_port=50000" >> $DFA_PROPERTIES
 echo "db_name=dataflow_analyzer" >> $DFA_PROPERTIES
 echo "db_user=monetdb" >> $DFA_PROPERTIES
 echo "db_password=monetdb" >> $DFA_PROPERTIES
@@ -51,4 +51,4 @@ for i in `echo $lines`; do
 done
 echo "--------------------------------------------"
 echo "Starting DfAnalyzer..."
-java -Xss2000m -Xms2000m -Xmx4000m -jar target/DfAnalyzer-$DFANALYZER_VERSION.jar
+java -jar target/DfAnalyzer-$DFANALYZER_VERSION.jar
