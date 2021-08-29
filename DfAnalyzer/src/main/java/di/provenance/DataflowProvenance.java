@@ -672,16 +672,17 @@ public class DataflowProvenance {
         return sb;
     }
 
-    protected static Integer getTransformationID(Connection db, Integer dfId, String dtTag, Integer identifier) {
+    protected static Integer getTransformationID(Connection db, Integer dfId, String dtTag, Integer identifier, String execTag) {
         try {
             Statement st = db.createStatement();
             StringBuilder sb = new StringBuilder();
             sb.append("SELECT t.id ").append(Utils.NEW_LINE)
-                    .append("FROM task t, data_transformation dt ").append(Utils.NEW_LINE)
+                    .append("FROM task t, data_transformation dt, dataflow_execution de ").append(Utils.NEW_LINE)
                     .append("WHERE t.dt_id = dt.id AND dt.tag = '").append(dtTag).append("' AND ")
                     .append("t.identifier = ").append(identifier).append(" AND ")
-                    .append("dt.df_id = ").append(dfId);
-
+                    .append("dt.df_id = ").append(dfId).append(" AND ")
+                    .append("de.tag = '").append(execTag).append("' AND ")
+                    .append("t.df_exec = de.tag");                    
             ResultSet rs = st.executeQuery(sb.toString());
             if (rs.next()) {
                 return rs.getInt(1);

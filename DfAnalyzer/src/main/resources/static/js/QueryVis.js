@@ -203,7 +203,7 @@ var dataset = new Vue({
                 }
             },
             error:function(){
-                console.log('not worked here.');
+                console.log('it did not work here.');
             } 
         });   
       }
@@ -224,7 +224,7 @@ function generateResult(csv){
             }
         },
         error:function(){
-            console.log('csv not worked.');
+            console.log('csv did not work.');
         } 
     });    
 }
@@ -266,22 +266,28 @@ function getUrlParameters(parameter, staticURL, decode) {
     var parents = [];
     var current;
     
-    queue.push(start/2-1);  
+    var dict = new Object();
+    var dict = {}
+    for (var id=0; id<id_nodes.length; id++){
+        dict[id_nodes[id]] = id
+    }
+
+    queue.push(dict[start]);  
     visited[0] = false;
     visited[1] = false;
     visited[2] = false;
-    visited[start/2-1] = true;
-    parents[start/2-1] = null;
+    visited[dict[start]/2-1] = true;
+    parents[dict[start]/2-1] = null;
 
     const graph = new Array(Object.keys(edges).length + 1).fill(0).map(() => new Array(Object.keys(edges).length + 1).fill(0));
 
-    for (var i=0; i<Object.keys(edges).length; i++){   
-        graph[edges[i]['from']/2-1][edges[i]['to']/2-1] = 1;
+    for (var i=0; i<Object.keys(edges).length; i++){ 
+        graph[dict[edges[i]['from']]][dict[edges[i]['to']]] = 1;
     } 
-
+    
     while(queue.length){
         current = queue.shift();
-        if (current === end/2-1){
+        if (current === dict[end]){
             return true;
         }
         for (var i = 0; i < graph.length; i += 1) {

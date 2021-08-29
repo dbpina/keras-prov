@@ -161,7 +161,7 @@ def fit_loop(model, fit_function, fit_inputs,
         elif "trainingmodel" in model.transformations_task:
             training_id = model.transformations_task["trainingmodel"]
 
-        t1 = Task(1, model.dataflow_tag, "TrainingModel")     
+        t1 = Task(1, model.dataflow_tag, model.exec_tag, "TrainingModel")     
         t1.begin()        
 
         if('momentum' in model.optimizer.get_config()):
@@ -222,7 +222,7 @@ def fit_loop(model, fit_function, fit_inputs,
                         values_to_store.append("null")
                 t1_input = DataSet("iTrainingModel", [Element(values_to_store)])
                 t1.add_dataset(t1_input)  
-                # t1.begin()  
+                t1.save()
 
         else:
             if (bool(model.final_hyperparameters)):
@@ -588,8 +588,8 @@ def test_loop(model, f, ins,
 
     if model.capture_provenance is True:
         if type == "evaluate":
-            t11 = Task(1, model.dataflow_tag, "TrainingModel") 
-            t3 = Task(3, model.dataflow_tag, "TestingModel", dependency=t11)     
+            t11 = Task(1, model.dataflow_tag, model.exec_tag, "TrainingModel") 
+            t3 = Task(3, model.dataflow_tag, model.exec_tag, "TestingModel", dependency=t11)     
             t3.begin()                
             now = time.time()
             if 'accuracy' in batch_logs:

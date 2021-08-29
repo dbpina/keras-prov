@@ -25,10 +25,12 @@ class Task(ProvenanceObject):
         - output (:obj:`str`, optional): Task output.
         - error (:obj:`str`, optional): Task error.
     """
-    def __init__(self, id, dataflow_tag, transformation_tag,
+    def __init__(self, id, dataflow_tag, exec_tag, transformation_tag,
                  sub_id="", dependency=None, workspace="", resource="",
                  output="", error=""):
-        ProvenanceObject.__init__(self, transformation_tag)
+        ProvenanceObject.__init__(self, transformation_tag)  
+        self._first = str(0)     
+        self._exec = exec_tag
         self._workspace = workspace
         self._resource = resource
         self._dependency = ""
@@ -40,7 +42,7 @@ class Task(ProvenanceObject):
         self._transformation = transformation_tag.lower()
         self._id = str(id)
         self._sub_id = sub_id
-        self._performances = []
+        self._performances = []        
         self.dfa_url = dfa_url
         self.start_time = None
         self.end_time = None
@@ -88,14 +90,18 @@ class Task(ProvenanceObject):
         assert isinstance(status, TaskStatus), \
             "The task status must be valid."
         self._status = status.value
+    
 
     def begin(self):
         """ Send a post request to the Dataflow Analyzer API to store the Task.
         """        
         self.set_status(TaskStatus.RUNNING)
         self.start_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        if(self.get_specification()['id'] == str(1)):
+            self._first = str(1)
         self.save()
         self._sets = []
+        self._first = str(0)        
 
     def end(self):
         """ Send a post request to the Dataflow Analyzer API to store the Task.

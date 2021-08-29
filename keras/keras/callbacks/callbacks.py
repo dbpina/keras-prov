@@ -970,8 +970,8 @@ class LearningRateScheduler(Callback):
             # elif "adaptation" in self.model.transformations_task:
             #     adaptation_task_id = self.model.transformations_task["adaptation"]                   
         
-            t11 = Task(1, self.model.dataflow_tag, "TrainingModel") 
-            t1 = Task(2, self.model.dataflow_tag, "Adaptation", dependency=t11)
+            t11 = Task(1, self.model.dataflow_tag, self.model.exec_tag, "TrainingModel") 
+            t1 = Task(2, self.model.dataflow_tag, self.model.exec_tag, "Adaptation", dependency=t11)
             if (round(tmp_lr, 5) != round(lr, 5)):
                 self.adaptation_id = self.adaptation_id + 1
                 t1.begin()

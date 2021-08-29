@@ -93,7 +93,7 @@ public class DbConnection {
         Dataflow dataflow = null;
         try {
             PreparedStatement st = connection.prepareStatement("SELECT df.id, df.tag, dfv.version "
-                    + "FROM dataflow df, dataflow_version dfv "
+                    + "FROM \"public\".dataflow df, \"public\".dataflow_version dfv "
                     + "WHERE tag=? AND df.id = dfv.df_id AND dfv.version=?;",
                     Statement.RETURN_GENERATED_KEYS);
             st.setString(1, dfTag);
@@ -114,7 +114,7 @@ public class DbConnection {
         ArrayList<Transformation> dts = new ArrayList<>();
         try {
             PreparedStatement st = connection.prepareStatement("SELECT dt.id, dt.tag "
-                    + "FROM data_transformation dt, dataflow df, dataflow_version dfv "
+                    + "FROM \"public\".data_transformation dt, \"public\".dataflow df, \"public\".dataflow_version dfv "
                     + "WHERE df.id = dfv.df_id AND df.id=? "
                     + "AND dfv.version=? AND df.id = dt.df_id;",
                     Statement.RETURN_GENERATED_KEYS);
@@ -139,7 +139,7 @@ public class DbConnection {
         ArrayList<Dataset> dss = new ArrayList<>();
         try {
             PreparedStatement st = connection.prepareStatement("SELECT ds.id, ds.tag "
-                    + "FROM data_set ds, dataflow df, dataflow_version dfv "
+                    + "FROM \"public\".data_set ds, \"public\".dataflow df, \"public\".dataflow_version dfv "
                     + "WHERE df.id = dfv.df_id AND df.id=? "
                     + "AND dfv.version=? AND df.id = ds.df_id;",
                     Statement.RETURN_GENERATED_KEYS);
@@ -189,7 +189,7 @@ public class DbConnection {
         ArrayList<Extractor> extractors = new ArrayList<>();
         try {
             PreparedStatement st = connection.prepareStatement("SELECT e.id, e.tag, e.cartridge, e.extension "
-                    + "FROM extractor e, data_set ds "
+                    + "FROM \"public\".extractor e, \"public\".data_set ds "
                     + "WHERE ds.id=? AND ds.id = e.ds_id;",
                     Statement.RETURN_GENERATED_KEYS);
             st.setInt(1, setID);
@@ -214,7 +214,7 @@ public class DbConnection {
         ArrayList<ExtractorCombination> extractorCombinations = new ArrayList<>();
         try {
             PreparedStatement st = connection.prepareStatement("SELECT e.id, e.outer_ext_id, e.inner_ext_id, e.keys, e.key_types "
-                    + "FROM extractor_combination e, data_set ds "
+                    + "FROM \"public\".extractor_combination e, \"public\".data_set ds "
                     + "WHERE ds.id=? AND ds.id = e.ds_id;",
                     Statement.RETURN_GENERATED_KEYS);
             st.setInt(1, s.getId());
@@ -241,7 +241,7 @@ public class DbConnection {
         ArrayList<Attribute> attributes = new ArrayList<>();
         try {
             PreparedStatement st = connection.prepareStatement("SELECT a.id, a.extractor_id, a.name, a.type "
-                    + "FROM attribute a, data_set ds "
+                    + "FROM \"public\".attribute a, \"public\".data_set ds "
                     + "WHERE ds.id=? AND ds.id = a.ds_id;",
                     Statement.RETURN_GENERATED_KEYS);
             st.setInt(1, s.getId());
@@ -265,7 +265,7 @@ public class DbConnection {
     public void updateDependencies(Dataflow dataflow, Dataset dataset) {
         try {
             PreparedStatement st = connection.prepareStatement("SELECT dep.previous_dt_id, dep.next_dt_id "
-                    + "FROM data_dependency dep, data_set ds "
+                    + "FROM \"public\".data_dependency dep, \"public\".data_set ds "
                     + "WHERE ds.id=? AND ds.id = dep.ds_id;",
                     Statement.RETURN_GENERATED_KEYS);
             st.setInt(1, dataset.getId());
@@ -370,5 +370,11 @@ public class DbConnection {
             st.close();
         }
         
+    }
+    
+    public void setSchema(String tag) throws SQLException{
+        Statement st = connection.createStatement();
+        boolean rs;
+        rs = st.execute("SET SCHEMA \"" + tag + "\";");
     }
 }

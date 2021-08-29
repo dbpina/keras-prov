@@ -64,9 +64,11 @@ public class TaskProvenance {
         for (DataflowObject o : t.getObjects()) {
             if (o.getType() == DataflowType.TASK) {
                 Task task = (Task) o;
-
+                if(task.ID == 1 & task.first == 1){
+                    df.execID = storeDataflowExecution(db, df.ID, task.execTag, t.getDBMS());  
+                }
                 if (Utils.verbose) {
-                    Utils.print(0, "Task - " + task.dataflowTag + " - " + task.transformationTag + " - " + task.ID + " - " + task.subID + " - " + task.status);
+                    Utils.print(0, "Task - " + task.dataflowTag + " - " + task.transformationTag + " - " + task.ID + " - " + task.subID + " - " + task.status + " - " + df.execID);
                 }
                 if (df != null && task.transformationTag != null) {
                     return storeTask(db, task, df, t.getDBMS());
@@ -97,7 +99,7 @@ public class TaskProvenance {
                             if (Utils.isNumericArray(record[index])) {
                                 HashMap<String, Integer> hmap = new HashMap<>();
                                 hmap.put(t.dependencyTags.get(index).toLowerCase(),
-                                        DataflowProvenance.getTransformationID(db, df.ID, t.dependencyTags.get(index).toLowerCase(), Integer.parseInt(record[index])));
+                                        DataflowProvenance.getTransformationID(db, df.ID, t.dependencyTags.get(index).toLowerCase(), Integer.parseInt(record[index]), t.execTag));
                                 t.dependencyTaskIDs.add(hmap);
                             }
                         }
@@ -107,12 +109,12 @@ public class TaskProvenance {
 
             ResultSet rs;
             if (dbms.equals(DBMS.MEMSQL)) {
-                rs = insertTask(db, t.ID, t.dataflowTag, t.transformationTag, t.status, t.workspace, t.resource, t.output, t.error);
+                rs = insertTask(db, t.ID, t.dataflowTag, t.transformationTag, t.status, t.workspace, t.resource, t.output, t.error, df.execID);
             } else {
                 rs = st.executeQuery("SELECT insertTask(" + t.ID + ",'"
                         + t.dataflowTag + "','" + t.transformationTag + "','"
                         + t.status + "','" + t.workspace + "','" + t.resource + "','"
-                        + t.output + "','" + t.error + "');");
+                        + t.output + "','" + t.error + "','" + t.execTag + "');");
             }
             if (rs.next()) {
                 t.ID = rs.getInt(1);
@@ -551,26 +553,29 @@ public class TaskProvenance {
         }
     }
 
-    private static ResultSet insertTask(Connection db, Integer videntifier, String vdf_tag, String vdt_tag, String vstatus, String vworkspace, String vcomputing_resource, String voutput_msg, String verror_msg) throws SQLException {
-        Integer vid = null, vdf_version = null, vdt_id = null;
+    private static ResultSet insertTask(Connection db, Integer videntifier, String vdf_tag, String vdt_tag, String vstatus, String vworkspace, String vcomputing_resource, String voutput_msg, String verror_msg, Integer execID) throws SQLException {
+        Integer vid = null, vdf_version = null, vdt_id = null, ve_id=null;
         String vvstatus;
 
-        PreparedStatement st = db.prepareStatement("SELECT dfv.version, dt.id FROM dataflow df, data_transformation dt, dataflow_version as dfv "
-                + "WHERE df.id = dt.df_id AND dfv.df_id = df.id AND df.tag = (?) AND dt.tag = (?);");
+        PreparedStatement st = db.prepareStatement("SELECT dfv.version, dt.id, dfe.id FROM dataflow df, data_transformation dt, dataflow_version as dfv, dataflow_execution as dfe "
+                + "WHERE df.id = dt.df_id AND dfv.df_id = df.id AND df.id = dfe.df_id AND df.tag = (?) AND dt.tag = (?) AND dfe.id = (?);");
         st.setString(1, vdf_tag);
         st.setString(2, vdt_tag);
+        st.setInt(3, execID);
         ResultSet rs = st.executeQuery();
 
         if (rs.next()) {
             vdf_version = rs.getInt(1);
             vdt_id = rs.getInt(2);
+            ve_id = rs.getInt(3);
         }
 
-        if (vdf_version != null && vdt_id != null) {
-            st = db.prepareStatement("SELECT t.id, t.status FROM task t WHERE t.df_version = (?) AND t.dt_id = (?) AND t.identifier = (?);");
+        if (vdf_version != null && vdt_id != null && ve_id != null) {
+            st = db.prepareStatement("SELECT t.id, t.status FROM task t WHERE t.df_version = (?) AND t.dt_id = (?) AND t.identifier = (?) AND t.df_exec = (?);");
             st.setInt(1, vdf_version);
             st.setInt(2, vdt_id);
             st.setInt(3, videntifier);
+            st.setInt(4, ve_id);
             rs = st.executeQuery();
 
             if (rs.next()) {
@@ -579,25 +584,27 @@ public class TaskProvenance {
             }
 
             if (vid == null) {
-                st = db.prepareStatement("INSERT INTO task(identifier,df_version,dt_id,status,workspace,computing_resource,output_msg,error_msg) VALUES(?,?,?,?,?,?,?,?);", Statement.RETURN_GENERATED_KEYS);
+                st = db.prepareStatement("INSERT INTO task(identifier,df_version,df_exec,dt_id,status,workspace,computing_resource,output_msg,error_msg) VALUES(?,?,?,?,?,?,?,?,?);", Statement.RETURN_GENERATED_KEYS);
                 st.setInt(1, videntifier);
                 st.setInt(2, vdf_version);
-                st.setInt(3, vdt_id);
-                st.setString(4, vstatus);
-                st.setString(5, vworkspace);
-                st.setString(6, vcomputing_resource);
-                st.setString(7, voutput_msg);
-                st.setString(8, verror_msg);
+                st.setInt(3, execID);
+                st.setInt(4, vdt_id);
+                st.setString(5, vstatus);
+                st.setString(6, vworkspace);
+                st.setString(7, vcomputing_resource);
+                st.setString(8, voutput_msg);
+                st.setString(9, verror_msg);
                 st.executeUpdate();
                 rs = st.getGeneratedKeys();
             } else {
-                st = db.prepareStatement("UPDATE task SET status=(?), output_msg=(?), error_msg=(?) WHERE identifier=(?) AND df_version=(?) AND dt_id=(?);");
+                st = db.prepareStatement("UPDATE task SET status=(?), output_msg=(?), error_msg=(?) WHERE identifier=(?) AND df_version=(?) AND dt_id=(?) AND df_exec = (?);");
                 st.setString(1, vstatus);
                 st.setString(2, voutput_msg);
                 st.setString(3, verror_msg);
                 st.setInt(4, videntifier);
                 st.setInt(5, vdf_version);
                 st.setInt(6, vdt_id);
+                st.setInt(7, execID);
                 st.executeUpdate();
             }
         }
@@ -647,5 +654,42 @@ public class TaskProvenance {
         rs.beforeFirst();
         return rs;
     }
+    
+    private static ResultSet insertDataflowExecution(Connection db, String execTag, Integer df_id) throws SQLException {
+        PreparedStatement st = db.prepareStatement("INSERT INTO dataflow_execution(tag,df_id) VALUES(?,?);", Statement.RETURN_GENERATED_KEYS);
+        st.setString(1, execTag);
+        st.setInt(2, df_id);
+        st.executeUpdate();
+        ResultSet rs = st.getGeneratedKeys();
+        return rs;
+    }  
 
+    private static Integer storeDataflowExecution(Connection db, Integer dfID, String execTag, DBMS dbms) {
+        try{
+            Statement st = db.createStatement();
+            boolean rs;
+            rs = st.execute("SET SCHEMA \"public\";");
+        }
+        catch (Exception ex) {
+            ex.printStackTrace();
+        }         
+        try {
+            Statement st = db.createStatement();
+            ResultSet rs;
+            Integer exec_id = 0;
+            if (dbms.equals(DBMS.MEMSQL)) {
+                rs = insertDataflowExecution(db, execTag, dfID);
+            } else {
+                rs = st.executeQuery("SELECT insertDataflowExecution('" + execTag + "', " + dfID + ");");
+            }
+            if (rs.next()) {
+                exec_id = rs.getInt(1);
+                return exec_id;
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+
+        return null;
+    }
 }

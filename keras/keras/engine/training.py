@@ -25,6 +25,7 @@ from ..utils import losses_utils
 from ..legacy import interfaces
 
 import time
+from datetime import datetime
 
 from .provenance import Provenance
 
@@ -267,6 +268,7 @@ class Model(Network):
                    **kwargs):
 
         self.dataflow_tag = dataflow_tag
+        self.exec_tag = dataflow_tag + str(datetime.now())
         self.adaptation = adaptation
         if self.dataflow_tag != "":
             self.p = Provenance(dataflow_tag)

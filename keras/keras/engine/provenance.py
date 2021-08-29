@@ -41,7 +41,7 @@ class Provenance():
 		#     Attribute("INITIAL_LRATE", AttributeType.NUMERIC)])
 		tf2_output = Set("oAdaptation", SetType.OUTPUT, 
 		    [Attribute("NEW_LRATE", AttributeType.NUMERIC),
-		    Attribute("TIMESTAMP", AttributeType.TEXT),
+		    Attribute("ATIMESTAMP", AttributeType.TEXT),
 		    Attribute("EPOCH_ID", AttributeType.NUMERIC),
 		    Attribute("ADAPTATION_ID", AttributeType.NUMERIC)])
 		self.tf1_output.set_type(SetType.INPUT)
@@ -85,7 +85,7 @@ class Provenance():
 
 		tf1 = Transformation("TrainingModel")	
 		tf1_layers_input = Set("iLayers", SetType.INPUT, 
-		    [Attribute("TIMESTAMP", AttributeType.TEXT),
+		    [Attribute("ILTIMESTAMP", AttributeType.TEXT),
 		    Attribute("NAME", AttributeType.TEXT),
 		    Attribute("ATTRIBUTE_TYPE", AttributeType.TEXT),
 		    Attribute("VALUE", AttributeType.TEXT)])
@@ -95,7 +95,7 @@ class Provenance():
 		#     Attribute("DECAY", AttributeType.NUMERIC),
 		#     Attribute("MOMENTUM", AttributeType.NUMERIC)] + atts)
 		tf1_output = Set("oTrainingModel", SetType.OUTPUT, 
-		    [Attribute("TIMESTAMP", AttributeType.TEXT), 
+		    [Attribute("OTIMESTAMP", AttributeType.TEXT), 
 		    Attribute("ELAPSED_TIME", AttributeType.TEXT),
 		    Attribute("LOSS", AttributeType.NUMERIC),
 		    Attribute("ACCURACY", AttributeType.NUMERIC),
@@ -107,7 +107,7 @@ class Provenance():
 		self.transformations_task["TrainingModel"] = self.transformations_total
 
 		atts_hyps = []
-		atts_hyps.append(Attribute("TIMESTAMP", AttributeType.TEXT))
+		atts_hyps.append(Attribute("ITIMESTAMP", AttributeType.TEXT))
 		for i in hyps:
 			hyp_type = hyperparameters_types[i]
 			atts_hyps.append(Attribute(i, AttributeType[hyp_type]))
@@ -140,7 +140,7 @@ class Provenance():
 
 		tf3 = Transformation("TestingModel")
 		tf3_output = Set("oTestingModel", SetType.OUTPUT, 
-		    [Attribute("TIMESTAMP", AttributeType.TEXT),
+		    [Attribute("OTTIMESTAMP", AttributeType.TEXT),
 		    Attribute("LOSS", AttributeType.NUMERIC),
 		    Attribute("ACCURACY", AttributeType.NUMERIC)])
 		tf1_output.set_type(SetType.INPUT)
@@ -155,7 +155,7 @@ class Provenance():
 	def create_layer_transformation(self):
 		tf3 = Transformation("Layers")
 		tf3_input = Set("iLayers", SetType.INPUT, 
-		    [Attribute("TIMESTAMP", AttributeType.TEXT),
+		    [Attribute("ILTIMESTAMP", AttributeType.TEXT),
 		    Attribute("NAME", AttributeType.TEXT),
 		    Attribute("ATTRIBUTE_TYPE", AttributeType.TEXT),
 		    Attribute("VALUE", AttributeType.TEXT)])
@@ -169,7 +169,7 @@ class Provenance():
 		cursor = connection.cursor()		
 
 		for i, j in hyperparameters.items():
-			print (i + " " + j)
+
 			# atts.append(Attribute(i, AttributeType[j]))
 			query_check_table = "select * from sys.columns where name='" + i.lower() + "' and table_id=(select id from sys.tables where name='ds_itrainingmodel');"
 			exists = cursor.execute(query_check_table)
@@ -246,7 +246,7 @@ class Provenance():
 		connection = pymonetdb.connect(username="monetdb", password="monetdb", hostname="localhost", database="dataflow_analyzer")
 		# create a cursor
 		cursor = connection.cursor()		
-		query = "SELECT * FROM dataflow WHERE tag = %(tag)s"
+		query = "SELECT * FROM \"public\".dataflow WHERE tag = %(tag)s"
 		rows = cursor.execute(query, {'tag': dataflow_tag})
 		if (rows>=1):
 			return False

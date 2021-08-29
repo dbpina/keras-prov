@@ -4,7 +4,9 @@
 
 Keras-Prov is a provenance service management approach designed for supporting hyperparameter analysis in Deep Neural Networks (DNNs). Keras-Prov integrates traditional retrospective provenance data (r-prov) with domain-specific DL data. This solution provides an API that allows for users to develop their ML-based workflows using Keras while being able to share and analyze captured provenance data using W3C PROV. 
 
-Keras-Prov was developed based on [DfAnalyzer](https://gitlab.com/ssvitor/dataflow_analyzer) and with modifications on [Keras](https://github.com/keras-team/keras) source code.
+Keras-Prov is a provenance service designed for supporting online hyperparameter analysis in Deep Neural Networks (DNNs). Keras-Prov integrates traditional retrospective provenance data (r-prov) with typical DNN software data, e.g. hyperparameters, DNN architecture attributes, etc. using W3C PROV. This solution provides an API that allows for users to develop their DNN-based workflows using Keras while being able to analyze online captured provenance data.
+
+Keras-Prov is developed on top of [DfAnalyzer](https://gitlab.com/ssvitor/dataflow_analyzer) provenance services and with modifications on the Keras source code. It uses the columnar DBMS MonetDB to support online provenance data analysis and to generate W3C PROV compliant documents.
 
 ## Software requirements
 
@@ -44,9 +46,11 @@ python setup.py install
 
 ## RESTful services initialization
 
-Keras-Prov depends on the initialization of DfAnalyzer and the SGBD MonetDB. 
+Keras-Prov depends on the initialization of DfAnalyzer and the DBMS MonetDB.
 
-Instructions for this step can also be found at GITLAB. The project DfAnalyzer at `DfAnalyzer` contains all web applications and RESTful services provided by the tool. Therefore, the following components are present in this project: Dataflow Viewer (DfViewer), Query Interface (QI), and Query Dashboard (QP). We provide a compressed file of our MonetDB database (to DfAnalyzer) for a local execution of the project DfAnalyzer. Therefore, users only need to run the script start-dfanalyzer.sh at the path DfAnalyzer. We assume the execution of these steps in an Unix-based operating system, as follows:
+Instructions for this step can also be found at [GitLab](https://gitlab.com/ssvitor/dataflow_analyzer). The project DfAnalyzer at DfAnalyzer contains web applications and RESTful services provided by the tool. 
+
+The following components are present in this project: Dataflow Viewer (DfViewer), Query Interface (QI), and Query Dashboard (QP). We provide a compressed file of our MonetDB database (to DfAnalyzer) for a local execution of the project DfAnalyzer. Therefore, users only need to run the script start-dfanalyzer.sh at the path DfAnalyzer. We assume the execution of these steps with a Unix-based operating system, as follows:
 
 ```
 
@@ -58,7 +62,7 @@ cd DfAnalyzer
 
 ## How to run DNN applications
 
-Keras-Prov contains a method *provenance* to capture provenance data. This method receives a tag to identify the experiment, if there is an adaptation of the hyperparameters during training (e.g., an update of the learning rate), that is, the use of methods such as LearningRateScheduler offered by Keras, and the list of hyperparameters to be captured. The user needs only to set which hyperparameters to capture, and no additional instrumentation is required. After setting True to the hyperparameters of interest, the user adds a call to the method provenance. The data received by the provenance method are defined by the user in the source code of the DNN application, as follows:
+The user needs only to set which hyperparameters to capture, and no additional instrumentation is required. After setting True to the hyperparameters of interest, the user adds a call to the method *provenance*. The provenance method is used by Keras-Prov to capture provenance data with the hyperparameters of interest. This method receives a tag to identify the workflow and associate to the provenance data, e.g. hyperparameters. This method captures provenance data as the Keras workflow executes and sends them to the provenance database managed by MonetDB. As the data reaches the database, it can be analyzed through the Dataflow Viewer (DfViewer), Query Interface (QI), and Query Dashboard (QP). In case there is an adaptation of the hyperparameters during training (e.g., an update of the learning rate), that is, the use of methods such as LearningRateScheduler offered by Keras, the hyperparameter’s values are updated and the adaptation is registered. The data received by the provenance method are defined by the user in the source code of the DNN application, as follows:
 
 ```
 hyps = {"OPTIMIZER_NAME": True,
@@ -76,13 +80,13 @@ model.provenance(dataflow_tag="keras-alexnet-df",
 
 ## Example
 
-At the path `Example`, the user can find a usage example of Keras-Prov. To run it, the user just needs to run the python command as it is normally done, as follows:
+The path `Example` shows how to use Keras-Prov. To run it, the user just needs to run the python command, as follows: 
 
 ```
 python alexnet.py
 ```
 
-To add new parameters to be captured and stored, the user need to import the necessary packages of dfa-lib-python and specify the new transformation. For example, if they want to capture data related to a dense block (growth rate and number of layers in the dense block), the specification have to be added before the *model.fit* command and should be like:
+To add new parameters (not present in the “hyps” list )to be captured and stored, the user needs to import the packages of dfa-lib-python and specify the new transformation. For example, if they want to capture data related to the DNN architecture like a dense block (growth rate and number of layers in the dense block), the specification has to be added before the model.fit command and should be like:
 
 ```
 from dfa_lib_python.dataflow import Dataflow

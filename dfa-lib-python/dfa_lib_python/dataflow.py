@@ -2,6 +2,7 @@ import requests
 import os
 from .ProvenanceObject import ProvenanceObject
 from .transformation import Transformation
+from datetime import datetime
 
 dfa_url = os.environ.get('DFA_URL', "http://localhost:22000/")
 
@@ -17,6 +18,7 @@ class Dataflow(ProvenanceObject):
     def __init__(self, tag, transformations=[]):
         ProvenanceObject.__init__(self, tag)
         self.transformations = transformations
+        self._exec = tag + str(datetime.now())
 
     @property
     def transformations(self):
@@ -49,5 +51,5 @@ class Dataflow(ProvenanceObject):
             the dataflow.
         """
         url = dfa_url + '/pde/dataflow/json'
-        r = requests.post(url, json=self.get_specification())      
+        r = requests.post(url, json=self.get_specification())   
         print(r.status_code)

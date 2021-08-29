@@ -20,6 +20,8 @@ public class Task extends DataflowObject {
     public String status = "";
     public String output = "";
     public String error = "";
+    public Integer first = null;
+    public String execTag = "";
     public ArrayList<dfFile> files = new ArrayList<>();
     public ArrayList<Element> elements = new ArrayList<>();
     public ArrayList<String> dependencyTags = new ArrayList<>();

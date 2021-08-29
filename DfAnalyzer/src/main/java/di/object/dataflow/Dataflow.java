@@ -12,6 +12,8 @@ import di.dataflow.object.DataflowObject;
 public class Dataflow extends DataflowObject {
 
     public Integer version;
+    public Integer execID;
+    public String execTag;
     public ArrayList<Transformation> transformations = new ArrayList<>();
     public ArrayList<Set> sets = new ArrayList<>();
 

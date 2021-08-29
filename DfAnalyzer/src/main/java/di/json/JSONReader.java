@@ -404,6 +404,8 @@ public class JSONReader {
         if (objSubID != null && !((String) objSubID).equals("null")) {
             task.subID = Integer.parseInt((String) objSubID);
         }
+        task.first = Integer.parseInt((String) jsonFile.get("first"));
+        task.execTag = (String) jsonFile.get("exec");
         task.workspace = (String) jsonFile.get("workspace");
         //task.invocation = (String) jsonFile.get("invocation");
         task.dataflowTag = (String) jsonFile.get("dataflow");

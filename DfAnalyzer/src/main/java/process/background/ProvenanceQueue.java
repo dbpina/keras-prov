@@ -111,7 +111,7 @@ public class ProvenanceQueue extends Thread {
             }
             endTime = System.currentTimeMillis();
             DecimalFormat df = new DecimalFormat("######.##");
-            transactionProcessingTime = Double.valueOf(df.format(transactionProcessingTime + ((endTime - startTime) / 1000.00)));
+//            transactionProcessingTime = Double.valueOf(df.format(transactionProcessingTime + ((endTime - startTime) / 1000.00)));
 
             System.out.println("Current amount elapsed time: " + transactionProcessingTime);
 

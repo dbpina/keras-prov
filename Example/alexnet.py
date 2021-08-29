@@ -103,6 +103,14 @@ y = y_tmp
 
 x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.2, shuffle=True)
 
+drop = 0.5
+epochs = 10
+lerate = 0.001
+
+initial_lrate = lerate
+epochs_drop = 10.0
+adaptation_id = 0
+
 # (3) Create a sequential model
 model = Sequential()
 
@@ -189,12 +197,6 @@ model.provenance(dataflow_tag="alexnet",
                 adaptation=True,
                 hyps = hyps)
 
-epochs = 100
-
-initial_lrate = lerate
-drop = 0.5
-epochs_drop = 10.0
-adaptation_id = 0
 
 # learning rate schedule
 def step_decay(epoch):

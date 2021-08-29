@@ -77,6 +77,7 @@ public class QueryProcessor {
         fromClause.addElements(fromDatasets.stream().map(ds -> ds.getTag()).collect(toCollection(LinkedHashSet::new)));
 
         MonetDbSqlQuery query = new MonetDbSqlQuery(selectClause,fromClause, whereClause);
+        dbConnection.setSchema(dataflow.getTag());
         dbConnection.runMonetDBQuery(query);
         
         return query;
@@ -130,6 +131,7 @@ public class QueryProcessor {
             } else {
                 //without extractors with indexing method, we only need to analyze the dataset in MonetDB's database
                 query = generateQueryWithoutIndexingExtractors(dataset, projections, selections);
+                dbConnection.setSchema(dataflow.getTag());
                 dbConnection.runMonetDBQuery(query);
             }
         }

@@ -114,14 +114,24 @@
     </build>
 
     <repositories>
-        <repository>
+<!--        <repository>
             <id>central</id>
-            <url>http://repo1.maven.org/maven2/</url>
-        </repository>
+            <url>https://repo1.maven.org/maven2/</url>
+        </repository>-->
         <repository>
             <id>clojars.org</id>
-            <url>http://clojars.org/repo</url>
+            <url>https://clojars.org/repo</url>
         </repository>
+<!--        <repository>
+            <id>central-maven</id>
+            <name>central https Releases</name>
+            <url>https://repo.maven.apache.org/maven2</url>
+        </repository>-->
+        <repository>
+            <id>central-spring</id>
+            <name>central spring https Releases</name>
+            <url>https://repo.spring.io</url>
+        </repository>        
     </repositories>
     <name>DfAnalyzer</name>
 </project>

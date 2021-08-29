@@ -11,6 +11,7 @@ CREATE SEQUENCE "extractor_id_seq" as integer START WITH 1;
 CREATE SEQUENCE "ecombination_id_seq" as integer START WITH 1;
 CREATE SEQUENCE "att_id_seq" as integer START WITH 1;
 CREATE SEQUENCE "task_id_seq" as integer START WITH 1;
+CREATE SEQUENCE "exec_id_seq" as integer START WITH 1;
 CREATE SEQUENCE "file_id_seq" as integer START WITH 1;
 CREATE SEQUENCE "performance_id_seq" as integer START WITH 1;
 
@@ -106,10 +107,19 @@ CREATE TABLE attribute(
 	FOREIGN KEY ("extractor_id") REFERENCES extractor("id") ON DELETE CASCADE ON UPDATE CASCADE
 );
 
+CREATE TABLE dataflow_execution(
+	id INTEGER DEFAULT NEXT VALUE FOR "exec_id_seq" NOT NULL,
+	tag VARCHAR(50) NOT NULL,
+	df_id INTEGER NOT NULL,
+	PRIMARY KEY ("tag"),
+	FOREIGN KEY ("df_id") REFERENCES dataflow("id") ON DELETE CASCADE ON UPDATE CASCADE
+);
+
 CREATE TABLE task(
 	id INTEGER DEFAULT NEXT VALUE FOR "task_id_seq" NOT NULL,
 	identifier INTEGER NOT NULL,
 	df_version INTEGER NOT NULL,
+	df_exec VARCHAR(50) NOT NULL,
 	dt_id INTEGER NOT NULL,
 	status VARCHAR(10),
 	workspace VARCHAR(500),
@@ -118,6 +128,7 @@ CREATE TABLE task(
 	error_msg TEXT,
 	PRIMARY KEY ("id"),
 	FOREIGN KEY ("df_version") REFERENCES dataflow_version("version") ON DELETE CASCADE ON UPDATE CASCADE,
+	FOREIGN KEY ("df_exec") REFERENCES dataflow_execution("tag") ON DELETE CASCADE ON UPDATE CASCADE,
 	FOREIGN KEY ("dt_id") REFERENCES data_transformation("id") ON DELETE CASCADE ON UPDATE CASCADE
 );
 
@@ -252,36 +263,46 @@ BEGIN
 	RETURN SELECT id FROM attribute WHERE ds_id=dds_id AND name=vname;
 END;
 
+-- DROP FUNCTION insertDataflowExecution;
+CREATE FUNCTION insertDataflowExecution (etag VARCHAR(50),edf_id INTEGER)
+RETURNS INTEGER
+BEGIN
+	DECLARE id INTEGER;
+    INSERT INTO dataflow_execution(tag,df_id) VALUES (etag,edf_id);
+	RETURN SELECT dfe.id FROM dataflow_execution dfe WHERE dfe.id=get_value_for('public', 'exec_id_seq')-1;
+END;
+
 -- DROP FUNCTION insertTask;
 CREATE FUNCTION insertTask (videntifier INTEGER, vdf_tag VARCHAR(50), vdt_tag VARCHAR(50), vstatus VARCHAR(10), vworkspace VARCHAR(500), 
-	vcomputing_resource VARCHAR(100), voutput_msg TEXT, verror_msg TEXT)
+	vcomputing_resource VARCHAR(100), voutput_msg TEXT, verror_msg TEXT, vdf_exec VARCHAR(50))
 RETURNS INTEGER
 BEGIN
 	DECLARE vid INTEGER;
 	DECLARE vvstatus VARCHAR(10);
 	DECLARE vdf_version INTEGER;
 	DECLARE vdt_id INTEGER;
+	DECLARE ve_id INTEGER;
 
-	SELECT dfv.version, dt.id INTO vdf_version, vdt_id
-	FROM dataflow df, data_transformation dt, dataflow_version as dfv
-	WHERE df.id = dt.df_id AND dfv.df_id = df.id AND df.tag = vdf_tag AND dt.tag = vdt_tag;
+	SELECT dfv.version, dt.id, dfe.id INTO vdf_version, vdt_id, ve_id
+	FROM dataflow df, data_transformation dt, dataflow_execution dfe, dataflow_version as dfv
+	WHERE df.id = dt.df_id AND dfv.df_id = df.id AND dfe.df_id = df.id AND df.tag = vdf_tag AND dt.tag = vdt_tag AND dfe.tag = vdf_exec;
 
-	IF((vdf_version IS NOT NULL) AND (vdt_id IS NOT NULL)) THEN
+	IF((vdf_version IS NOT NULL) AND (vdt_id IS NOT NULL) AND (ve_id IS NOT NULL)) THEN
 		SELECT t.id, t.status INTO vid, vvstatus
 		FROM task t
-		WHERE t.df_version = vdf_version AND t.dt_id = vdt_id AND t.identifier = videntifier;
+		WHERE t.df_version = vdf_version AND t.dt_id = vdt_id AND t.identifier = videntifier AND t.df_exec = vdf_exec;
 
 		IF(vid IS NULL) THEN
 		    #SELECT NEXT VALUE FOR "task_id_seq" into vid;
-		    INSERT INTO task(identifier,df_version,dt_id,status,workspace,computing_resource,output_msg,error_msg) 
-		    VALUES (videntifier,vdf_version,vdt_id,vstatus,vworkspace,vcomputing_resource,voutput_msg,verror_msg);
+		    INSERT INTO task(identifier,df_version,df_exec,dt_id,status,workspace,computing_resource,output_msg,error_msg) 
+		    VALUES (videntifier,vdf_version,vdf_exec,vdt_id,vstatus,vworkspace,vcomputing_resource,voutput_msg,verror_msg);
 	    ELSE
 	    	UPDATE task
 	    	SET status = vstatus, output_msg = voutput_msg, error_msg = verror_msg
-	    	WHERE identifier = videntifier AND df_version = vdf_version AND dt_id = vdt_id;
+	    	WHERE identifier = videntifier AND df_version = vdf_version AND dt_id = vdt_id AND df_exec = vdf_exec;
 		END IF;
     END IF;
-	RETURN SELECT t.id FROM task t WHERE t.df_version = vdf_version AND t.dt_id = vdt_id AND t.identifier = videntifier;
+	RETURN SELECT t.id FROM task t WHERE t.df_version = vdf_version AND t.dt_id = vdt_id AND t.identifier = videntifier AND t.df_exec = vdf_exec;
 END;
 
 -- DROP FUNCTION insertFile;
