@@ -2,8 +2,6 @@
 
 ## Overview
 
-Keras-Prov is a provenance service management approach designed for supporting hyperparameter analysis in Deep Neural Networks (DNNs). Keras-Prov integrates traditional retrospective provenance data (r-prov) with domain-specific DL data. This solution provides an API that allows for users to develop their ML-based workflows using Keras while being able to share and analyze captured provenance data using W3C PROV. 
-
 Keras-Prov is a provenance service designed for supporting online hyperparameter analysis in Deep Neural Networks (DNNs). Keras-Prov integrates traditional retrospective provenance data (r-prov) with typical DNN software data, e.g. hyperparameters, DNN architecture attributes, etc. using W3C PROV. This solution provides an API that allows for users to develop their DNN-based workflows using Keras while being able to analyze online captured provenance data.
 
 Keras-Prov is developed on top of [DfAnalyzer](https://gitlab.com/ssvitor/dataflow_analyzer) provenance services and with modifications on the Keras source code. It uses the columnar DBMS MonetDB to support online provenance data analysis and to generate W3C PROV compliant documents.
@@ -17,6 +15,7 @@ The following softwares have to be configured/installed for running a DNN traini
 * [PyMonetDB](https://pymonetdb.readthedocs.io/en/latest/index.html)
 * [DfAnalyzer](https://github.com/dbpina/keras-prov/tree/main/DfAnalyzer)
 * [dfa-lib-python](https://github.com/dbpina/keras-prov/tree/main/dfa-lib-python/) 
+* [TensorFlow v2.2.0](https://www.tensorflow.org/)
 
 ## Installation
 
@@ -86,7 +85,7 @@ The path `Example` shows how to use Keras-Prov. To run it, the user just needs t
 python alexnet.py
 ```
 
-To add new parameters (not present in the “hyps” list )to be captured and stored, the user needs to import the packages of dfa-lib-python and specify the new transformation. For example, if they want to capture data related to the DNN architecture like a dense block (growth rate and number of layers in the dense block), the specification has to be added before the model.fit command and should be like:
+To add new parameters (not present in the “hyps” list )to be captured and stored, the user needs to import the packages of dfa-lib-python and specify the new transformation. For example, if they want to capture data related to the DNN architecture like a dense block (growth rate and number of layers in the dense block), the specification has to be added before the model.fit command on user's training code and should be like:
 
 ```
 from dfa_lib_python.dataflow import Dataflow
