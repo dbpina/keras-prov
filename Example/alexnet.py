@@ -4,6 +4,7 @@ import os
 from keras.optimizers import Adam, SGD
 
 from keras.callbacks import LearningRateScheduler
+from keras.metrics import Precision, Recall, FalsePositives, FalseNegatives
 
 from keras.models import Sequential
 from keras.layers import Dense, Dropout, Activation
@@ -32,7 +33,7 @@ x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.2, shuffle
 drop = 0.5
 
 drop = 0.5
-epochs = 2
+epochs = 12
 lerate = 0.001
 
 initial_lrate = lerate
@@ -121,9 +122,9 @@ hyps = {"OPTIMIZER_NAME": True,
     "BATCH_SIZE": True,
     "NUM_LAYERS": True}
 
-model.provenance(dataflow_tag="alexnet",
-                adaptation=True,
-                hyps = hyps)
+model.provenance(dataflow_tag="alexnet1",
+                 adaptation=True,
+                 hyps = hyps)
 
 
 # learning rate schedule
@@ -137,10 +138,10 @@ lrate = LearningRateScheduler(step_decay, verbose=1)
 opt = Adam(learning_rate=initial_lrate)
 #opt = SGD(lr=lerate)
 
-model.compile(loss='categorical_crossentropy', optimizer=opt, metrics=['accuracy'])
+model.compile(loss='categorical_crossentropy', optimizer=opt, metrics=['accuracy', Precision(), Recall(), FalsePositives()])
 
 
 # (5) Train
 model.fit(x_train, y_train, batch_size=64, epochs=epochs, callbacks=[lrate], verbose=1, validation_split=0.2, shuffle=True)
 
-model.evaluate(x_test, y_test)
+a = model.evaluate(x_test, y_test)

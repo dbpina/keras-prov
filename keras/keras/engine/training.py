@@ -246,18 +246,12 @@ class Model(Network):
         # Collected trainable weights, sorted in topological order.
         trainable_weights = self.trainable_weights
         self._collected_trainable_weights = trainable_weights
-
+        
         if hasattr(self, 'dataflow_tag'):
             self.capture_provenance = True
             if self.firstrun:
+                transformations_task = self.p.create_training_transformation(self.new_hyps, self.adaptation, self.transformations, self.h_dict, self.metrics_names)  
                 self.p.save(self.dataflow_tag)
-
-
-
-            # 1 - primeira vez que roda, tem hips diferentes
-            # 2 - primeira vez que roda, não tem hips diferentes
-            # 3 - não é primeira vez que roda, tem hips diferentes
-            # 4 - não é primeira vez que roda, não tem hips diferentes
 
     def provenance(self,
                    dataflow_tag="",
@@ -270,6 +264,7 @@ class Model(Network):
         self.dataflow_tag = dataflow_tag
         self.exec_tag = dataflow_tag + str(datetime.now())
         self.adaptation = adaptation
+        self.transformations = transformations
         if self.dataflow_tag != "":
             self.p = Provenance(dataflow_tag)
             dictionary = {}
@@ -279,10 +274,9 @@ class Model(Network):
             user_hyps = [k[0] for k in hyperparameters]
             self.new_hyps = new_hyps
             self.final_hyperparameters = new_hyps + user_hyps
+            self.h_dict = dictionary
 
-            if self.firstrun is True:
-                transformations_task = self.p.create_training_transformation(new_hyps, adaptation, transformations, dictionary)                        
-            else:
+            if self.firstrun is False:
                 self.p.get_dataflow()
                 # self.p.drop_view(dataflow_tag)      
                 # self.p.add_hyperparameter(dictionary)  

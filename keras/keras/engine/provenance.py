@@ -55,33 +55,13 @@ class Provenance():
 	# check if the user is using hyperparameters not supported, if they are, this script
 	# should calls DfAnalyzer to alter table or alter table itself
 
-	def create_training_transformation(self, hyps, adaptation, transformations, hyperparameters):
+	def create_training_transformation(self, hyps, adaptation, transformations, hyperparameters, metrics):
 		self.transformations_total = 0
 		self.transformations_task = {}
+
 		new_atts = []
 		for i, j in hyperparameters.items():
 			new_atts.append(Attribute(i, AttributeType[j]))
-
-		# if (bool(transformations)):
-		# 	for dt_tag, dt_atts in transformations.items():
-		# 		i_atts = []
-		# 		o_atts = []
-		# 		t = Transformation(dt_tag)
-
-		# 		for set_type, atts in dt_atts.items():
-		# 		    for key in atts:
-		# 		        if (set_type == "input"):
-		# 		        	i_atts.append(Attribute(key.upper(), AttributeType[atts[key].upper()]))				        
-		# 		        elif (set_type == "output"):
-		# 		        	o_atts.append(Attribute(key.upper(), AttributeType[atts[key].upper()]))
-
-		# 		tf_input = Set("i" + dt_tag, SetType.INPUT, i_atts)
-		# 		tf_output = Set("o" + dt_tag, SetType.OUTPUT, o_atts)
-		# 		t.set_sets([tf_input, tf_output])
-		# 		self.transformations_total += 1
-		# 		self.transformations_task[dt_tag] = self.transformations_total
-		# 		self.df.add_transformation(t)
-
 
 		tf1 = Transformation("TrainingModel")	
 		tf1_layers_input = Set("iLayers", SetType.INPUT, 
@@ -94,20 +74,34 @@ class Provenance():
 		#     Attribute("LEARNING_RATE", AttributeType.NUMERIC),
 		#     Attribute("DECAY", AttributeType.NUMERIC),
 		#     Attribute("MOMENTUM", AttributeType.NUMERIC)] + atts)
-		tf1_output = Set("oTrainingModel", SetType.OUTPUT, 
-		    [Attribute("OTIMESTAMP", AttributeType.TEXT), 
-		    Attribute("ELAPSED_TIME", AttributeType.TEXT),
-		    Attribute("LOSS", AttributeType.NUMERIC),
-		    Attribute("ACCURACY", AttributeType.NUMERIC),
-		    Attribute("VAL_LOSS", AttributeType.NUMERIC),
-		    Attribute("VAL_ACCURACY", AttributeType.NUMERIC),    
-		    Attribute("EPOCH", AttributeType.NUMERIC)])
+		# tf1_output = Set("oTrainingModel", SetType.OUTPUT, 
+		#     [Attribute("OTIMESTAMP", AttributeType.TEXT), 
+		#     Attribute("ELAPSED_TIME", AttributeType.TEXT),
+		#     Attribute("LOSS", AttributeType.NUMERIC),
+		#     Attribute("ACCURACY", AttributeType.NUMERIC),
+		#     Attribute("PRECISION", AttributeType.NUMERIC),
+		#     Attribute("RECALL", AttributeType.NUMERIC),
+		#     Attribute("VAL_LOSS", AttributeType.NUMERIC),
+		#     Attribute("VAL_ACCURACY", AttributeType.NUMERIC),  
+		# 	  Attribute("VAL_PRECISION", AttributeType.NUMERIC),
+		#     Attribute("VAL_RECALL", AttributeType.NUMERIC),		      
+		#     Attribute("EPOCH", AttributeType.NUMERIC)])
 
 		self.transformations_total += 1
 		self.transformations_task["TrainingModel"] = self.transformations_total
 
+		train_metrics = list(metrics)
+		train_metrics += ['val_' + n for n in metrics]
+		m_metrics = []
+		m_metrics.append(Attribute("OTRAIN_TIMESTAMP", AttributeType.TEXT))
+		m_metrics.append(Attribute("ELAPSED_TIME", AttributeType.TEXT))
+		for n in train_metrics:
+			m_metrics.append(Attribute(n, AttributeType.NUMERIC))
+
+		tf1_output = Set("oTrainingModel", SetType.OUTPUT, m_metrics)
+
 		atts_hyps = []
-		atts_hyps.append(Attribute("ITIMESTAMP", AttributeType.TEXT))
+		atts_hyps.append(Attribute("ITRAIN_TIMESTAMP", AttributeType.TEXT))
 		for i in hyps:
 			hyp_type = hyperparameters_types[i]
 			atts_hyps.append(Attribute(i, AttributeType[hyp_type]))
@@ -139,10 +133,12 @@ class Provenance():
 			self.create_adaptation_transformation()
 
 		tf3 = Transformation("TestingModel")
-		tf3_output = Set("oTestingModel", SetType.OUTPUT, 
-		    [Attribute("OTTIMESTAMP", AttributeType.TEXT),
-		    Attribute("LOSS", AttributeType.NUMERIC),
-		    Attribute("ACCURACY", AttributeType.NUMERIC)])
+		te_metrics = []
+		te_metrics.append(Attribute("OTEST_TIMESTAMP", AttributeType.TEXT))
+		for n in metrics:
+			te_metrics.append(Attribute(n, AttributeType.NUMERIC))
+		
+		tf3_output = Set("oTestingModel", SetType.OUTPUT, te_metrics)			
 		tf1_output.set_type(SetType.INPUT)
 		tf1_output.dependency=tf1._tag
 		tf3.set_sets([tf1_output, tf3_output])

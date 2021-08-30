@@ -161,7 +161,7 @@ def fit_loop(model, fit_function, fit_inputs,
         elif "trainingmodel" in model.transformations_task:
             training_id = model.transformations_task["trainingmodel"]
 
-        t1 = Task(1, model.dataflow_tag, model.exec_tag, "TrainingModel")     
+        t1 = Task(1, model.dataflow_tag, model.exec_tag, "TrainingModel")    
         t1.begin()        
 
         if('momentum' in model.optimizer.get_config()):
@@ -312,20 +312,19 @@ def fit_loop(model, fit_function, fit_inputs,
                         epoch_logs['val_' + l] = o
 
         callbacks.on_epoch_end(epoch, epoch_logs)
+
         if callbacks.model.stop_training:
             break
         if model.capture_provenance is True:
-            now = time.time()
-            if 'accuracy' in epoch_logs:
-                acc = epoch_logs['accuracy']
-            else:
-                acc = 0
+            now = time.time()           
+            m_values = []
+            m_values.append(now)
+            m_values.append(now - start)
+            for i in callback_metrics:
+                m_values.append(epoch_logs[i])
 
-            if 'val_accuracy' in epoch_logs:
-                v_acc = epoch_logs['val_accuracy']
-            else:
-                v_acc = 0           
-            t1_output = DataSet("oTrainingModel", [Element([now, now - start, epoch_logs['loss'], acc, epoch_logs['val_loss'], v_acc, epoch])])
+            t1_output = DataSet("oTrainingModel", [Element(m_values)])
+
             t1.add_dataset(t1_output)
             if(epoch==epochs-1):
                 t1.end()
@@ -592,11 +591,11 @@ def test_loop(model, f, ins,
             t3 = Task(3, model.dataflow_tag, model.exec_tag, "TestingModel", dependency=t11)     
             t3.begin()                
             now = time.time()
-            if 'accuracy' in batch_logs:
-                acc = batch_logs['accuracy']
-            else:
-                acc = 0
-            testing_output = DataSet("oTestingModel", [Element([now, outs[0], outs[1]])])
+            t_values = []
+            t_values.append(now)
+            for i in model.metrics_names:
+                t_values.append(batch_logs[i])
+            testing_output = DataSet("oTestingModel", [Element(t_values)])
             t3.add_dataset(testing_output)
             t3.end()
        
