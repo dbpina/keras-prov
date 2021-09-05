@@ -157,7 +157,7 @@ docker pull lilianekunstmann/keras-prov
 This image can be executed and accessed interactively through the following commands:
 
 ```
-docker run --network host --name <nome_container> -i keras-prov
+docker run --network host --name <nome_container> -i lilianekunstmann/keras-prov
 docker exec -it <nome_container> bash
 ```
 
