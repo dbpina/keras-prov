@@ -151,13 +151,13 @@ from keras.layers import BatchNormalization
 We provide an image of the environment. The Dockerfile present in the folder creates the image of a container with the data from this repository. 
 
 ```
-docker pull lilianekunstmann/kerasprov
+docker pull lilianekunstmann/keras-prov
 ```
 
 This image can be executed and accessed interactively through the following commands:
 
 ```
-docker run --name <nome_container> -i kerasprov
+docker run --network host --name <nome_container> -i lilianekunstmann/keras-prov
 docker exec -it <nome_container> bash
 ```
 
