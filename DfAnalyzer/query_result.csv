@@ -1,2 +1,2 @@
-strides;channels;
-2;144;
+optimizer_name;
+Adam;

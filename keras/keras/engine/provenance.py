@@ -10,7 +10,6 @@ from dfa_lib_python.element import Element
 from dfa_lib_python.task_status import TaskStatus
 
 from enum import Enum
-import pymonetdb
 
 hyperparameters_types = {"OPTIMIZER_NAME": "TEXT",
 "LEARNING_RATE": "NUMERIC",
@@ -157,107 +156,6 @@ class Provenance():
 		    Attribute("VALUE", AttributeType.TEXT)])
 		tf3.set_sets([tf3_input])
 		self.df.add_transformation(tf3)
-
-	def add_hyperparameter(self, hyperparameters):
-		# set up a connection. arguments below are the defaults
-		connection = pymonetdb.connect(username="monetdb", password="monetdb", hostname="localhost", database="dataflow_analyzer")
-		# create a cursor
-		cursor = connection.cursor()		
-
-		for i, j in hyperparameters.items():
-
-			# atts.append(Attribute(i, AttributeType[j]))
-			query_check_table = "select * from sys.columns where name='" + i.lower() + "' and table_id=(select id from sys.tables where name='ds_itrainingmodel');"
-			exists = cursor.execute(query_check_table)
-			if (exists == 0):			
-				query_alter_table = "ALTER TABLE ds_itrainingmodel ADD " + i + " " + j + "; COMMIT;"
-				rows = cursor.execute(query_alter_table)
-
-		cursor.execute("CREATE VIEW itrainingmodel AS SELECT * FROM ds_itrainingmodel; COMMIT;")
-
-		connection.close()
-
-	def add_hyperparameter_from_list(self, hyps):
-		# set up a connection. arguments below are the defaults
-		connection = pymonetdb.connect(username="monetdb", password="monetdb", hostname="localhost", database="dataflow_analyzer")
-		# create a cursor
-		cursor = connection.cursor()		
-
-		for i in hyps:
-			query_check_table = "select * from sys.columns where name='" + i.lower() + "' and table_id=(select id from sys.tables where name='ds_itrainingmodel');"
-			exists = cursor.execute(query_check_table)
-			if (exists == 0):
-				query_alter_table = "ALTER TABLE ds_itrainingmodel ADD " + i + " " + hyperparameters_types[i] + "; COMMIT;"
-				rows = cursor.execute(query_alter_table)
-				cursor.execute("INSERT INTO attribute (ds_id, extractor_id, name, type) VALUES (10, null, '" + i.lower() + "', '" + hyperparameters_types[i] + "'); COMMIT;")
-
-		cursor.execute("CREATE VIEW itrainingmodel AS SELECT * FROM ds_itrainingmodel; COMMIT;")
-
-		connection.close()
-
-	def get_task_id(self, dataflow_tag):
-		# set up a connection. arguments below are the defaults
-		connection = pymonetdb.connect(username="monetdb", password="monetdb", hostname="localhost", database="dataflow_analyzer")
-		# create a cursor
-		cursor = connection.cursor()		
-		get_tasks = "select tag, identifier from task, data_transformation where task.dt_id = data_transformation.id;"
-		cursor.execute(get_tasks)
-		rows = cursor.fetchall()
-
-		for i, j in rows:
-			self.transformations_task[i] = j
-
-		connection.close()
-
-	def get_columns_names(self, dataflow_tag):
-		# set up a connection. arguments below are the defaults
-		connection = pymonetdb.connect(username="monetdb", password="monetdb", hostname="localhost", database="dataflow_analyzer")
-		# create a cursor
-		cursor = connection.cursor()		
-		get_columns = "select name from sys.columns where table_id=(select id from sys.tables where name='ds_itrainingmodel') and name <> 'id' and name <> 'trainingmodel_task_id';"
-		cursor.execute(get_columns)
-		columns = cursor.fetchall()
-		
-		for i in columns:
-			self.columns.append(i[0]) 
-		
-		connection.close()
-
-
-		# out = Set("oTrainingModel", SetType.OUTPUT, 
-		#     [Attribute("TIMESTAMP", AttributeType.TEXT), 
-		#     Attribute("ELAPSED_TIME", AttributeType.TEXT),
-		#     Attribute("LOSS", AttributeType.NUMERIC),
-		#     Attribute("ACCURACY", AttributeType.NUMERIC),
-		#     Attribute("VAL_LOSS", AttributeType.NUMERIC),
-		#     Attribute("VAL_ACCURACY", AttributeType.NUMERIC),    
-		#     Attribute("EPOCH", AttributeType.NUMERIC)])
-
-		# t1.set_sets([inp])
-		# self.df.add_transformation(t1)	
-		# self.df.save()
-
-	def get_first_run(self, dataflow_tag):
-		# set up a connection. arguments below are the defaults
-		connection = pymonetdb.connect(username="monetdb", password="monetdb", hostname="localhost", database="dataflow_analyzer")
-		# create a cursor
-		cursor = connection.cursor()		
-		query = "SELECT * FROM \"public\".dataflow WHERE tag = %(tag)s"
-		rows = cursor.execute(query, {'tag': dataflow_tag})
-		if (rows>=1):
-			return False
-		elif (rows==0):
-			return True
-
-	def drop_view(self, dataflow_tag):
-		# set up a connection. arguments below are the defaults
-		connection = pymonetdb.connect(username="monetdb", password="monetdb", hostname="localhost", database="dataflow_analyzer")
-		# create a cursor
-		cursor = connection.cursor()		
-		query = "DROP VIEW IF EXISTS itrainingmodel; COMMIT;"
-		rows = cursor.execute(query)
-		connection.close()
-
 
 	def save(self, dataflow_tag):
 		self.df.save()

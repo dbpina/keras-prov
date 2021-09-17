@@ -249,9 +249,8 @@ class Model(Network):
         
         if hasattr(self, 'dataflow_tag'):
             self.capture_provenance = True
-            if self.firstrun:
-                transformations_task = self.p.create_training_transformation(self.new_hyps, self.adaptation, self.transformations, self.h_dict, self.metrics_names)  
-                self.p.save(self.dataflow_tag)
+            transformations_task = self.p.create_training_transformation(self.new_hyps, self.adaptation, self.transformations, self.h_dict, self.metrics_names)  
+            self.p.save(self.dataflow_tag)
 
     def provenance(self,
                    dataflow_tag="",
@@ -269,22 +268,14 @@ class Model(Network):
             self.p = Provenance(dataflow_tag)
             dictionary = {}
             dictionary = dict(hyperparameters)
-            self.firstrun = self.p.get_first_run(dataflow_tag)
+            #self.firstrun = self.p.get_first_run(dataflow_tag)
             new_hyps = [k for k,v in hyps.items() if v==True]
             user_hyps = [k[0] for k in hyperparameters]
             self.new_hyps = new_hyps
             self.final_hyperparameters = new_hyps + user_hyps
             self.h_dict = dictionary
 
-            if self.firstrun is False:
-                self.p.get_dataflow()
-                # self.p.drop_view(dataflow_tag)      
-                # self.p.add_hyperparameter(dictionary)  
-                # self.p.drop_view(dataflow_tag) 
-                # self.p.add_hyperparameter_from_list(new_hyps)
-                # self.p.get_task_id(dataflow_tag)
-                # self.p.get_columns_names(dataflow_tag)
-                # self.columns = p.columns
+            self.p.get_dataflow()
             self.transformations_task = self.p.transformations_task
 
     def get_dataflow(self):

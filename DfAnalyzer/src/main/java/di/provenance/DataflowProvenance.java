@@ -35,6 +35,7 @@ public class DataflowProvenance {
     public static Integer handleDataflowTransaction(Connection db, Transaction t) throws SQLException {
         boolean newDf = true;
         Integer dfID = null;
+        Integer FirstRun = null;
         String dfTag = "";
         HashMap<String, Integer> transformations = new HashMap<>();
         HashMap<String, Integer> sets = new HashMap<>();
@@ -47,6 +48,7 @@ public class DataflowProvenance {
                     Utils.print(0, "Dataflow - " + o.dataflowTag);
                 }
                 Dataflow df = (Dataflow) o;
+                FirstRun = firstRun(db, df.dataflowTag, t.getDBMS());
                 try {
                     Statement st = db.createStatement();
                     boolean rs;
@@ -55,11 +57,14 @@ public class DataflowProvenance {
                     ex.printStackTrace();
                 }
                 dfID = storeDataflow(db, df, t.getDBMS());
-                storeDataflowVersion(db, df, t.getDBMS());
+                
                 dfTag = o.dataflowTag;
                 if (dfID == null) {
                     newDf = false;
                     dfID = df.ID;
+                }
+                else{
+                    storeDataflowVersion(db, df, t.getDBMS());
                 }
             } else if (newDf && o.getType() == DataflowType.TRANSFORMATION) {
                 Transformation dt = (Transformation) o;
@@ -130,12 +135,14 @@ public class DataflowProvenance {
         }
         createSchema(db, t.getDBMS(), dfTag);
 //        data set tables
-        for (Set s : setTables) {
-            if (Utils.verbose) {
-                Utils.print(1, "Data set table - " + s.tag);
+        if (newDf == true){
+            for (Set s : setTables) {
+                if (Utils.verbose) {
+                    Utils.print(1, "Data set table - " + s.tag);
+                }
+                createDataSetTable(db, s, t.getDBMS());
+                createDataSetView(db, s, t.getDBMS());
             }
-            createDataSetTable(db, s, t.getDBMS());
-            createDataSetView(db, s, t.getDBMS());
         }
 
         return dfID;
@@ -147,10 +154,8 @@ public class DataflowProvenance {
             Statement st = db.createStatement();
             
             boolean rs;
-            Integer schema_id = null;
             rs = st.execute("CREATE SCHEMA IF NOT EXISTS \"" +  dfTag + "\";");
-//            if (rs.next()) {
-//                schema_id = rs.getInt(1);
+//            if (rs == true) {
 //            }
             rs = st.execute("SET SCHEMA \"" +  dfTag + "\";");
         }
@@ -889,5 +894,23 @@ public class DataflowProvenance {
 
         rs.beforeFirst();
         return rs;
+    }
+
+    private static Integer firstRun(Connection db, String dataflowTag, DBMS dbms) {
+        Integer FirstRun = null;
+        try {
+            Statement st = db.createStatement();
+            ResultSet rs = st.executeQuery("SELECT id "
+                    + "FROM \"public\".dataflow "
+                    + "WHERE tag='" + dataflowTag + "';");
+            
+            if (rs.next()) {
+                FirstRun = rs.getInt(1);
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+
+        return FirstRun;
     }
 }

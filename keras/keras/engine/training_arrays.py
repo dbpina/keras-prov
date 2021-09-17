@@ -213,27 +213,15 @@ def fit_loop(model, fit_function, fit_inputs,
 
         values_to_store = []
         values_to_store.append(time_now)
-        if(model.firstrun == False):
-            if (bool(model.final_hyperparameters)):
-                for i in model.final_hyperparameters:
-                    if (i.upper() in hyps_values): 
-                        values_to_store.append(hyps_values[i.upper()])
-                    else: 
-                        values_to_store.append("null")
-                t1_input = DataSet("iTrainingModel", [Element(values_to_store)])
-                t1.add_dataset(t1_input)  
-                t1.save()
-
-        else:
-            if (bool(model.final_hyperparameters)):
-                for i in model.final_hyperparameters:
-                    if (i.upper() in hyps_values): 
-                        values_to_store.append(hyps_values[i.upper()])
-                    else: 
-                        values_to_store.append("null")
-                t1_input = DataSet("iTrainingModel", [Element(values_to_store)])
-                t1.add_dataset(t1_input)    
-                t1.save()
+        if (bool(model.final_hyperparameters)):
+            for i in model.final_hyperparameters:
+                if (i.upper() in hyps_values): 
+                    values_to_store.append(hyps_values[i.upper()])
+                else: 
+                    values_to_store.append("null")
+            t1_input = DataSet("iTrainingModel", [Element(values_to_store)])
+            t1.add_dataset(t1_input)  
+            t1.save()
 
 
     for epoch in range(initial_epoch, epochs):
