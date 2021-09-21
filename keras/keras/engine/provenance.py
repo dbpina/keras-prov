@@ -94,6 +94,7 @@ class Provenance():
 		m_metrics = []
 		m_metrics.append(Attribute("OTRAIN_TIMESTAMP", AttributeType.TEXT))
 		m_metrics.append(Attribute("ELAPSED_TIME", AttributeType.TEXT))
+		m_metrics.append(Attribute("EPOCH_ID", AttributeType.NUMERIC))
 		for n in train_metrics:
 			m_metrics.append(Attribute(n, AttributeType.NUMERIC))
 

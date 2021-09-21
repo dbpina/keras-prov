@@ -308,6 +308,7 @@ def fit_loop(model, fit_function, fit_inputs,
             m_values = []
             m_values.append(now)
             m_values.append(now - start)
+            m_values.append(epoch)
             for i in callback_metrics:
                 m_values.append(epoch_logs[i])
 
