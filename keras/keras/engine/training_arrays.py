@@ -175,7 +175,7 @@ def fit_loop(model, fit_function, fit_inputs,
             decay = 0
         
         hyps_values = {"OPTIMIZER_NAME": model.optimizer.__class__.__name__,
-                "LEARNING_RATE": model.optimizer.get_config()['learning_rate'],
+                "LEARNING_RATE": round(model.optimizer.get_config()['learning_rate'], 7),
                 "DECAY": decay,
                 "MOMENTUM": momentum,
                 "NUM_EPOCHS": epochs,
@@ -310,6 +310,8 @@ def fit_loop(model, fit_function, fit_inputs,
             m_values.append(now - start)
             m_values.append(epoch)
             for i in callback_metrics:
+                if np.isnan(epoch_logs[i]):
+                    epoch_logs[i] = -9999999
                 m_values.append(epoch_logs[i])
 
             t1_output = DataSet("oTrainingModel", [Element(m_values)])
@@ -582,8 +584,22 @@ def test_loop(model, f, ins,
             now = time.time()
             t_values = []
             t_values.append(now)
-            for i in model.metrics_names:
-                t_values.append(batch_logs[i])
+            if steps is not None:
+                #print("outs")
+                #print(outs)
+                for i in model.metrics_names:
+                    if np.isnan(outs[i]):
+                        outs[i] = -9999999
+                    t_values.append(outs[i])
+            else:
+                #print("batch")
+                #print(batch_logs)
+                #print(batch_logs['loss'])
+                #print(outs[0])
+                for i in model.metrics_names:
+                    if np.isnan(batch_logs[i]):
+                        batch_logs[i] = -9999999
+                    t_values.append(batch_logs[i])
             testing_output = DataSet("oTestingModel", [Element(t_values)])
             t3.add_dataset(testing_output)
             t3.end()

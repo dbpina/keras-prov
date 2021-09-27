@@ -96,7 +96,7 @@ class Provenance():
 		m_metrics.append(Attribute("ELAPSED_TIME", AttributeType.TEXT))
 		m_metrics.append(Attribute("EPOCH_ID", AttributeType.NUMERIC))
 		for n in train_metrics:
-			m_metrics.append(Attribute(n, AttributeType.NUMERIC))
+		    m_metrics.append(Attribute(n, AttributeType.NUMERIC))
 
 		tf1_output = Set("oTrainingModel", SetType.OUTPUT, m_metrics)
 

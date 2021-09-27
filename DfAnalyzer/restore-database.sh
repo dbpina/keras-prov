@@ -1,6 +1,6 @@
 DB_FARM=./data
 SQL_PATH=./monetdb/sql
-# monetdbd create $DB_FARM
+monetdbd create $DB_FARM
 # rm -rf data
 # unzip data-local.zip
 monetdbd stop $DB_FARM
