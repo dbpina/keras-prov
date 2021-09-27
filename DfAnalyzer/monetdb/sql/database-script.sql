@@ -1,5 +1,7 @@
 START TRANSACTION;
 
+SET SCHEMA "public";
+
 -- sequences
 CREATE SEQUENCE "df_id_seq" as integer START WITH 1;
 CREATE SEQUENCE "version_id_seq" as integer START WITH 1;
