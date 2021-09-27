@@ -31,12 +31,9 @@ y = y_tmp
 
 x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.2, shuffle=True)
 
-
-actv = sys.argv[1]
-lerate = 0.0001
 drop = 0.4
-
-epochs = 50
+epochs = 2
+lerate = 0.002
 
 initial_lrate = lerate
 epochs_drop = 10.0
@@ -124,7 +121,7 @@ hyps = {"OPTIMIZER_NAME": True,
     "BATCH_SIZE": True,
     "NUM_LAYERS": True}
 
-model.provenance(dataflow_tag="alexnet-2",
+model.provenance(dataflow_tag="alexnet1",
                  adaptation=False,
                  hyps = hyps)
 
