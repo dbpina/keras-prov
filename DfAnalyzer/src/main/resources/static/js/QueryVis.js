@@ -60,7 +60,7 @@ var dataset = new Vue({
         
         conds = this.$data.Conditions || "";
         if (conds !== ""){
-            conds = conds.split(" ");
+            conds = conds.split(",");
             for (var i=0; i<conds.length; i++){
                 if (this.$data.s_selections.indexOf(conds[i]) === -1){
                     this.$data.s_selections += conds[i] + ";";
@@ -80,7 +80,7 @@ var dataset = new Vue({
         
         sel_types = this.$data.QueryType;        
         if (sel_types.length === 0) {
-            types = "logical";
+            types = "physical";
         }
         else if (sel_types.length === 2){
             types = 'hybrid';
@@ -109,56 +109,53 @@ var dataset = new Vue({
 
         for (var i=0; i < selected.length; i++){
             if (selected[i] !== id){
-                if (bfs(edges, id_nodes, id, selected[i])){             
-                    a = origin.indexOf(selected[i]);
-                    origin = origin.slice(a+1,a+2);
-                    b = destination.indexOf(id);
-                    destination = destination.slice(b+1,b+2);                  
-                    if(!origin.includes(id)) origin.push(id);
-                    if(!destination.includes(selected[i])) destination.push(selected[i]);
+                if (bfs(edges, id_nodes, id, selected[i])){   
+                    if(this.$data.origin.includes(selected[i]) && this.$data.destination.includes(selected[i])){
+                        index_d = this.$data.origin.indexOf(selected[i]);
+                        this.$data.origin.splice(index_d, 1);
+                    }                                                                        
+                    if(!this.$data.origin.includes(id)) this.$data.origin.push(id);
+                    if(!this.$data.destination.includes(selected[i])) this.$data.destination.push(selected[i]);               
                 }                        
 
                 else if (bfs(edges, id_nodes, selected[i], id)){
-                    a = origin.indexOf(id);
-                    origin = origin.slice(a+1,a+2);
-                    b = destination.indexOf(selected[i]);
-                    destination = destination.slice(b+1,b+2);    
-                    if(origin.includes(selected[i]) && destination.includes(selected[i])) destination.pop(selected[i])
-                        if(!origin.includes(selected[i])) origin.push(selected[i]);
-                    if(!destination.includes(id)) destination.push(id);
+                    if(this.$data.origin.includes(selected[i]) && this.$data.destination.includes(selected[i])){
+                        index_d = this.$data.destination.indexOf(selected[i]);
+                        this.$data.destination.splice(index_d, 1);
+                    }  
+                    if(!this.$data.origin.includes(selected[i])) this.$data.origin.push(selected[i]);
+                    if(!this.$data.destination.includes(id)) this.$data.destination.push(id);                         
+                }    
+                else {
+                    if(!this.$data.origin.includes(id)) this.$data.origin.push(id);
+                    if(!this.$data.destination.includes(id)) this.$data.destination.push(id);                         
                 }
-
-                    else { //acho que nesse caso é o includes
-                     origin.push(selected[i]);
-                     destination.push(selected[i]);                        
-//                        if(!origin.includes(id)) origin.push(id);
-//                        if(!destination.includes(id)) destination.push(id);
-                    }       
             }  
-            else {
-                origin.push(id);
-                destination.push(id); 
+            else if (selected[i] == id && selected.length == 1){
+                this.$data.origin.push(id);
+                this.$data.destination.push(id); 
             }      
-        }         
-        for (var k=0;k<origin.length;k++){
-            for (var l=0;l<nodes.length;l++){
-                if (nodes[l]['id'] === origin[k]){
-                    if (this.$data.s_source.indexOf(nodes[l]['label']) === -1){
-                        this.$data.s_source += nodes[l]['label'] + ";";
-                    }
-                }
+        }  
+
+        var dict2 = new Object();
+        var dict2 = {}
+        for (var id=0; id<id_nodes.length; id++){
+            dict2[id_nodes[id]] = id
+        }  
+        
+        this.$data.s_source = []
+        this.$data.s_target = []
+        for (var k=0;k<this.$data.origin.length;k++){  
+            if (this.$data.s_source.indexOf(nodes[dict2[this.$data.origin[k]]]['label']) === -1){
+                this.$data.s_source += nodes[dict2[this.$data.origin[k]]]['label'] + ";";
             }
         }
-        
-        for (var k=0;k<destination.length;k++){
-            for (var l=0;l<nodes.length;l++){
-                if (nodes[l]['id'] === destination[k]){
-                    if (this.$data.s_target.indexOf(nodes[l]['label']) === -1){
-                        this.$data.s_target += nodes[l]['label'] + ";";
-                    }
-                }
+
+        for (var l=0;l<this.$data.destination.length;l++){
+            if (this.$data.s_target.indexOf(nodes[dict2[this.$data.destination[l]]]['label']) === -1){
+                this.$data.s_target += nodes[dict2[this.$data.destination[l]]]['label'] + ";";
             }
-        }        
+        }       
         $('#saved').css("display","block");        
       },
       run: function(){
@@ -270,14 +267,12 @@ function getUrlParameters(parameter, staticURL, decode) {
     var dict = {}
     for (var id=0; id<id_nodes.length; id++){
         dict[id_nodes[id]] = id
+        visited[id] = false
     }
 
     queue.push(dict[start]);  
-    visited[0] = false;
-    visited[1] = false;
-    visited[2] = false;
-    visited[dict[start]/2-1] = true;
-    parents[dict[start]/2-1] = null;
+    visited[dict[start]] = true;
+    parents[dict[start]] = null;
 
     const graph = new Array(Object.keys(edges).length + 1).fill(0).map(() => new Array(Object.keys(edges).length + 1).fill(0));
 
@@ -288,6 +283,7 @@ function getUrlParameters(parameter, staticURL, decode) {
     while(queue.length){
         current = queue.shift();
         if (current === dict[end]){
+            //console.log("true -> tem caminho!")
             return true;
         }
         for (var i = 0; i < graph.length; i += 1) {
@@ -298,6 +294,54 @@ function getUrlParameters(parameter, staticURL, decode) {
             }
         }
     }
-    console.log("false");
+    //console.log("false -> não tem caminho!");
     return false;
 } 
+
+//  function bfs(edges, id_nodes, start, end){
+//     var queue = [];
+//     var visited = [];
+//     var parents = [];
+//     var current;
+
+//     visited[start] = true;
+//     console.log(edges);
+//     console.log(id_nodes);
+//     console.log(start);
+//     console.log(end);
+//     queue.push(start);    
+
+//     var dict = new Object();
+//     var dict = {}
+//     for (var id=0; id<id_nodes.length; id++){
+//         dict[id_nodes[id]] = id
+//     }
+
+
+//     const graph = new Array(Object.keys(edges).length + 1).fill(0).map(() => new Array(Object.keys(edges).length + 1).fill(0));
+
+//     for (var i=0; i<Object.keys(edges).length; i++){ 
+//         graph[dict[edges[i]['from']]][dict[edges[i]['to']]] = 1;
+//     } 
+
+//     console.log(graph)
+
+//     while(queue.length){
+//         current = queue.shift();
+//         if (current === end){
+//             console.log("true -> tem caminho!")
+//             return true;
+//         }
+//         for (var i=0; i<Object.keys(edges).length; i++){
+//             for (var j=0; j<id_nodes.length; j++){
+//                 if (j !== current && edges[i]['from']===current && edges[i]['to']===j && !visited[i]){
+//                     parents[i] = current;
+//                     visited[i] = true;
+//                     queue.push(j);
+//                 }                
+//             }
+//         }
+//     }
+//     console.log("false -> não tem caminho!")
+//     return false;
+// } 

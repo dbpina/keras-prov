@@ -136,6 +136,7 @@ class Provenance():
 		te_metrics = []
 		te_metrics.append(Attribute("OTEST_TIMESTAMP", AttributeType.TEXT))
 		for n in metrics:
+			n = "otest_" + n
 			te_metrics.append(Attribute(n, AttributeType.NUMERIC))
 		
 		tf3_output = Set("oTestingModel", SetType.OUTPUT, te_metrics)			

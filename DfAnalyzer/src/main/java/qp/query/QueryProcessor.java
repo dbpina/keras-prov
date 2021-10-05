@@ -75,8 +75,20 @@ public class QueryProcessor {
         
         //change here
         fromClause.addElements(fromDatasets.stream().map(ds -> ds.getTag()).collect(toCollection(LinkedHashSet::new)));
+        
+        if (fromClause.getElements().size() == 0){
+            SqlClause fromTotal = new SqlClause(null, ", ");
+            
+            for (String s : spec.getSources()) {
+                fromTotal.addElement(s);
+            } 
+            for (String t : spec.getTargets()) {
+                fromTotal.addElement(t);
+            }             
+            fromClause = fromTotal;
+        }
 
-        MonetDbSqlQuery query = new MonetDbSqlQuery(selectClause,fromClause, whereClause);
+        MonetDbSqlQuery query = new MonetDbSqlQuery(selectClause, fromClause, whereClause);
         dbConnection.setSchema(dataflow.getTag());
         dbConnection.runMonetDBQuery(query);
         
