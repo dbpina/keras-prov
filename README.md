@@ -172,3 +172,5 @@ To watch the video, please, click [here](https://www.youtube.com/watch?v=QOZY2CQ
 * [Pina, D., Kunstmann, L., de Oliveira, D., Valduriez, P., & Mattoso, M. (2020, September). Uma abordagem para coleta e análise de dados de configurações em redes neurais profundas. In 35ª Simpósio Brasileiro de Banco de Dados (SBBD) (pp. 1-6).](https://hal-lirmm.ccsd.cnrs.fr/lirmm-02969506/)
 
 * [Pina, D., Kunstmann, L., de Oliveira, D., Valduriez, P., & Mattoso, M. (2020). Provenance Supporting Hyperparameter Analysis in Deep Neural Networks. In Provenance and Annotation of Data and Processes (pp. 20-38). Springer, Cham.](https://link.springer.com/chapter/10.1007/978-3-030-80960-7_2)
+
+* [Pina, D., Neves, L., de Oliveira, D., & Mattoso, M. (2021, October). Captura Automática de Dados de Proveniência de Experimentos de Aprendizado de Máquina com Keras-Prov. In Anais Estendidos do XXXVI Simpósio Brasileiro de Bancos de Dados (pp. 69-74). SBC.](https://sol.sbc.org.br/index.php/sbbd_estendido/article/view/18165)
