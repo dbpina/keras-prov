@@ -163,7 +163,7 @@ docker exec -it <nome_container> bash
 
 ## Presentation Video
 
-To watch the video, please, click [here](https://www.youtube.com/watch?v=QOZY2CQfXJ8).
+To watch the video, please, click [here](https://www.youtube.com/watch?v=jo8_U7MFaI4).
 
 ## Publications
 
